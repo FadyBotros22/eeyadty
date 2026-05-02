@@ -28,6 +28,10 @@ class AppColors {
   static const Color divider = Color(0xFFECEFF4);
   static const Color shadow = Color(0x14000000);
   static const Color inputBorder = Color(0xFFDDE1E8);
+
+  static const successLight = Color(0xFFDCFCE7);
+  static const confirmedBg = Color(0xFFE8EEFF);
+  static const confirmedText = Color(0xFF3B6FE8);
 }
 
 class AppTextStyles {
@@ -98,4 +102,7 @@ class AppDimens {
   static const double radiusFull = 100;
 
   static const double cardElevation = 2;
+
+  static const radiusCircle = 100.0;
+
 }

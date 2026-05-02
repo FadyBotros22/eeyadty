@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../feature_auth/login_screen.dart';
 import '../feature_auth/signup_screen.dart';
 import '../feature_client/client_home_screen.dart';
+import '../feature_doctor/doctor_home_screen.dart';
 import '../feature_home/persona_selection_screen.dart';
-import '../splash/splash_screen.dart';
 
 class RouterGenerator {
   static const String splashRoute = '/splash';
@@ -27,6 +27,11 @@ class RouterGenerator {
       case ClientHomeScreen.route:
         child = const ClientHomeScreen();
         break;
+
+      case DoctorHomeScreen.route:
+        child = const DoctorHomeScreen();
+        break;
+
 
       default:
         child = const PersonaSelectionScreen();

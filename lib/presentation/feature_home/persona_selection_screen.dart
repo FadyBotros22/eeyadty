@@ -26,8 +26,7 @@ class PersonaSelectionScreen extends StatelessWidget {
                     height: 44,
                     decoration: BoxDecoration(
                       color: AppColors.primary,
-                      borderRadius:
-                          BorderRadius.circular(AppDimens.radiusMD),
+                      borderRadius: BorderRadius.circular(AppDimens.radiusMD),
                     ),
                     child: const Icon(
                       Icons.medical_services_rounded,
@@ -52,15 +51,16 @@ class PersonaSelectionScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 'How would you like to continue?',
-                style: AppTextStyles.body
-                    .copyWith(color: AppColors.textSecondary),
+                style:
+                    AppTextStyles.body.copyWith(color: AppColors.textSecondary),
               ),
               const SizedBox(height: 40),
               // Client card
               _PersonaCard(
                 icon: Icons.person_rounded,
                 title: 'I\'m a Patient',
-                subtitle: 'Book appointments, browse services, and manage your health journey.',
+                subtitle:
+                    'Book appointments, browse services, and manage your health journey.',
                 color: AppColors.primary,
                 onTap: () {
                   Navigator.of(context).pushNamed(
@@ -74,10 +74,14 @@ class PersonaSelectionScreen extends StatelessWidget {
               _PersonaCard(
                 icon: Icons.local_hospital_rounded,
                 title: 'I\'m a Doctor',
-                subtitle: 'Manage your schedule, view patient appointments, and clinic settings.',
+                subtitle:
+                    'Manage your schedule, view patient appointments, and clinic settings.',
                 color: AppColors.accent,
                 onTap: () {
-                  _showDoctorPlaceholder(context);
+                  Navigator.of(context).pushNamed(
+                    LoginScreen.route,
+                    arguments: {'persona': 'doctor'},
+                  );
                 },
               ),
               const Spacer(),
@@ -136,8 +140,8 @@ class PersonaSelectionScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'The doctor portal is coming soon.\nStay tuned for updates!',
-              style: AppTextStyles.body
-                  .copyWith(color: AppColors.textSecondary),
+              style:
+                  AppTextStyles.body.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -149,12 +153,10 @@ class PersonaSelectionScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.accent,
                   shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(AppDimens.radiusMD),
+                    borderRadius: BorderRadius.circular(AppDimens.radiusMD),
                   ),
                 ),
-                child: const Text('Got it',
-                    style: AppTextStyles.button),
+                child: const Text('Got it', style: AppTextStyles.button),
               ),
             ),
             const SizedBox(height: 8),
