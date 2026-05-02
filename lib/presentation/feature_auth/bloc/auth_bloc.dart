@@ -38,7 +38,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       email: event.email,
       password: event.password,
       fullName: event.fullName,
-      phoneNumber: event.phoneNumber, role: UserRole.patient,
+      phoneNumber: event.phoneNumber, role: event.role,
     );
     if (result.isSuccess) {
       final user = result.data!;
