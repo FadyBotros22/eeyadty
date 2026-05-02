@@ -17,11 +17,13 @@ class RouterGenerator {
         break;
 
       case LoginScreen.route:
-        child = const LoginScreen();
+        var args = settings.arguments as LoginScreenArguments;
+        child = LoginScreen(role: args.role,);
         break;
 
       case SignUpScreen.route:
-        child = const SignUpScreen();
+        var args = settings.arguments as LoginScreenArguments;
+        child = SignUpScreen(role: args.role);
         break;
 
       case ClientHomeScreen.route:

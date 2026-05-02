@@ -319,7 +319,7 @@ class _ProfileTabState extends State<ProfileTab> {
               Navigator.pop(context);
               getIt<AuthBloc>().add(const AuthEvent.signOut());
               Navigator.of(context).pushNamedAndRemoveUntil(
-                  LoginScreen.route, (_) => false);
+                  LoginScreen.route,arguments: LoginScreenArguments(role: UserRole.patient), (_) => false);
             },
             child: const Text('Sign Out',
                 style: TextStyle(color: AppColors.error)),

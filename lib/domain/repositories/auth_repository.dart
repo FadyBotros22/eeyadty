@@ -13,6 +13,7 @@ class AuthRepository {
   Future<AppResult<ClientUser>> signIn({
     required String email,
     required String password,
+    required UserRole role,
   }) async {
     try {
       final response =
@@ -22,10 +23,6 @@ class AuthRepository {
       if (user == null) {
         return AppResult.failure('Sign in failed. Please try again.');
       }
-
-      // 1. Resolve role from the shared profiles table.
-      final roleStr = await SupabaseManager.getUserRole(user.id);
-      final role = UserRoleX.fromString(roleStr ?? UserRole.patient.value);
 
       // 2. Load the role-specific profile.
       final Map<String, dynamic>? profile = role == UserRole.doctor

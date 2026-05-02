@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/di/dependency_injection.dart';
+import '../../domain/models/enums/user_role.dart';
 import '../../domain/utils/app_constants.dart';
 import '../widgets/app_widgets.dart';
 import '../feature_client/client_home_screen.dart';
@@ -11,7 +12,8 @@ import 'bloc/auth_state.dart';
 class SignUpScreen extends StatefulWidget {
   static const route = '/sign-up';
 
-  const SignUpScreen({super.key});
+  const SignUpScreen({super.key, required this.role});
+  final UserRole role;
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -161,6 +163,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   phoneNumber: _phoneCtrl.text.isNotEmpty
                                       ? _phoneCtrl.text.trim()
                                       : null,
+                              role: widget.role,
                                 ));
                           }
                         },

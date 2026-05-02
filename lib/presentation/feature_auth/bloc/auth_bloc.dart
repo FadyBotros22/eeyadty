@@ -20,7 +20,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   FutureOr<void> _onSignIn(AuthSignIn event, Emitter<AuthState> emit) async {
     emit(state.copyWith(isLoading: true, errorMessage: null, isSuccess: false));
     final result =
-        await _authRepository.signIn(email: event.email, password: event.password);
+        await _authRepository.signIn(email: event.email, password: event.password, role: event.role);
     if (result.isSuccess) {
       final user = result.data!;
       _userPreferences.currentUser = user;

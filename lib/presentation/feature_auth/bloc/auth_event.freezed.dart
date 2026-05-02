@@ -145,9 +145,9 @@ extension AuthEventPatterns on AuthEvent {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String email, String password)? signIn,
+    TResult Function(String email, String password, UserRole role)? signIn,
     TResult Function(String email, String password, String fullName,
-            String? phoneNumber)?
+            UserRole role, String? phoneNumber)?
         signUp,
     TResult Function()? signOut,
     required TResult orElse(),
@@ -155,10 +155,10 @@ extension AuthEventPatterns on AuthEvent {
     final _that = this;
     switch (_that) {
       case AuthSignIn() when signIn != null:
-        return signIn(_that.email, _that.password);
+        return signIn(_that.email, _that.password, _that.role);
       case AuthSignUp() when signUp != null:
-        return signUp(
-            _that.email, _that.password, _that.fullName, _that.phoneNumber);
+        return signUp(_that.email, _that.password, _that.fullName, _that.role,
+            _that.phoneNumber);
       case AuthSignOut() when signOut != null:
         return signOut();
       case _:
@@ -181,19 +181,20 @@ extension AuthEventPatterns on AuthEvent {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String email, String password) signIn,
-    required TResult Function(
-            String email, String password, String fullName, String? phoneNumber)
+    required TResult Function(String email, String password, UserRole role)
+        signIn,
+    required TResult Function(String email, String password, String fullName,
+            UserRole role, String? phoneNumber)
         signUp,
     required TResult Function() signOut,
   }) {
     final _that = this;
     switch (_that) {
       case AuthSignIn():
-        return signIn(_that.email, _that.password);
+        return signIn(_that.email, _that.password, _that.role);
       case AuthSignUp():
-        return signUp(
-            _that.email, _that.password, _that.fullName, _that.phoneNumber);
+        return signUp(_that.email, _that.password, _that.fullName, _that.role,
+            _that.phoneNumber);
       case AuthSignOut():
         return signOut();
       case _:
@@ -215,19 +216,19 @@ extension AuthEventPatterns on AuthEvent {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String email, String password)? signIn,
+    TResult? Function(String email, String password, UserRole role)? signIn,
     TResult? Function(String email, String password, String fullName,
-            String? phoneNumber)?
+            UserRole role, String? phoneNumber)?
         signUp,
     TResult? Function()? signOut,
   }) {
     final _that = this;
     switch (_that) {
       case AuthSignIn() when signIn != null:
-        return signIn(_that.email, _that.password);
+        return signIn(_that.email, _that.password, _that.role);
       case AuthSignUp() when signUp != null:
-        return signUp(
-            _that.email, _that.password, _that.fullName, _that.phoneNumber);
+        return signUp(_that.email, _that.password, _that.fullName, _that.role,
+            _that.phoneNumber);
       case AuthSignOut() when signOut != null:
         return signOut();
       case _:
@@ -239,10 +240,12 @@ extension AuthEventPatterns on AuthEvent {
 /// @nodoc
 
 class AuthSignIn implements AuthEvent {
-  const AuthSignIn({required this.email, required this.password});
+  const AuthSignIn(
+      {required this.email, required this.password, required this.role});
 
   final String email;
   final String password;
+  final UserRole role;
 
   /// Create a copy of AuthEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -258,15 +261,16 @@ class AuthSignIn implements AuthEvent {
             other is AuthSignIn &&
             (identical(other.email, email) || other.email == email) &&
             (identical(other.password, password) ||
-                other.password == password));
+                other.password == password) &&
+            (identical(other.role, role) || other.role == role));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, email, password);
+  int get hashCode => Object.hash(runtimeType, email, password, role);
 
   @override
   String toString() {
-    return 'AuthEvent.signIn(email: $email, password: $password)';
+    return 'AuthEvent.signIn(email: $email, password: $password, role: $role)';
   }
 }
 
@@ -277,7 +281,7 @@ abstract mixin class $AuthSignInCopyWith<$Res>
           AuthSignIn value, $Res Function(AuthSignIn) _then) =
       _$AuthSignInCopyWithImpl;
   @useResult
-  $Res call({String email, String password});
+  $Res call({String email, String password, UserRole role});
 }
 
 /// @nodoc
@@ -293,6 +297,7 @@ class _$AuthSignInCopyWithImpl<$Res> implements $AuthSignInCopyWith<$Res> {
   $Res call({
     Object? email = null,
     Object? password = null,
+    Object? role = null,
   }) {
     return _then(AuthSignIn(
       email: null == email
@@ -303,6 +308,10 @@ class _$AuthSignInCopyWithImpl<$Res> implements $AuthSignInCopyWith<$Res> {
           ? _self.password
           : password // ignore: cast_nullable_to_non_nullable
               as String,
+      role: null == role
+          ? _self.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as UserRole,
     ));
   }
 }
@@ -314,11 +323,13 @@ class AuthSignUp implements AuthEvent {
       {required this.email,
       required this.password,
       required this.fullName,
+      required this.role,
       this.phoneNumber});
 
   final String email;
   final String password;
   final String fullName;
+  final UserRole role;
   final String? phoneNumber;
 
   /// Create a copy of AuthEvent
@@ -338,17 +349,18 @@ class AuthSignUp implements AuthEvent {
                 other.password == password) &&
             (identical(other.fullName, fullName) ||
                 other.fullName == fullName) &&
+            (identical(other.role, role) || other.role == role) &&
             (identical(other.phoneNumber, phoneNumber) ||
                 other.phoneNumber == phoneNumber));
   }
 
   @override
   int get hashCode =>
-      Object.hash(runtimeType, email, password, fullName, phoneNumber);
+      Object.hash(runtimeType, email, password, fullName, role, phoneNumber);
 
   @override
   String toString() {
-    return 'AuthEvent.signUp(email: $email, password: $password, fullName: $fullName, phoneNumber: $phoneNumber)';
+    return 'AuthEvent.signUp(email: $email, password: $password, fullName: $fullName, role: $role, phoneNumber: $phoneNumber)';
   }
 }
 
@@ -360,7 +372,11 @@ abstract mixin class $AuthSignUpCopyWith<$Res>
       _$AuthSignUpCopyWithImpl;
   @useResult
   $Res call(
-      {String email, String password, String fullName, String? phoneNumber});
+      {String email,
+      String password,
+      String fullName,
+      UserRole role,
+      String? phoneNumber});
 }
 
 /// @nodoc
@@ -377,6 +393,7 @@ class _$AuthSignUpCopyWithImpl<$Res> implements $AuthSignUpCopyWith<$Res> {
     Object? email = null,
     Object? password = null,
     Object? fullName = null,
+    Object? role = null,
     Object? phoneNumber = freezed,
   }) {
     return _then(AuthSignUp(
@@ -392,6 +409,10 @@ class _$AuthSignUpCopyWithImpl<$Res> implements $AuthSignUpCopyWith<$Res> {
           ? _self.fullName
           : fullName // ignore: cast_nullable_to_non_nullable
               as String,
+      role: null == role
+          ? _self.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as UserRole,
       phoneNumber: freezed == phoneNumber
           ? _self.phoneNumber
           : phoneNumber // ignore: cast_nullable_to_non_nullable

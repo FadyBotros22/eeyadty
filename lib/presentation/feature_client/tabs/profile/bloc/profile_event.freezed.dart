@@ -319,8 +319,8 @@ extension ProfileEventPatterns on ProfileEvent {
 
 /// @nodoc
 
-class LoadProfile implements ProfileEvent {
-  const LoadProfile({required this.userId, required this.role});
+class LoadProfile extends ProfileEvent {
+  const LoadProfile({required this.userId, required this.role}) : super._();
 
   @override
   final String userId;
@@ -393,7 +393,7 @@ class _$LoadProfileCopyWithImpl<$Res> implements $LoadProfileCopyWith<$Res> {
 
 /// @nodoc
 
-class UpdateProfile implements ProfileEvent {
+class UpdateProfile extends ProfileEvent {
   const UpdateProfile(
       {required this.userId,
       required this.role,
@@ -402,7 +402,8 @@ class UpdateProfile implements ProfileEvent {
       this.dateOfBirth,
       this.gender,
       this.specialization,
-      this.licenseNumber});
+      this.licenseNumber})
+      : super._();
 
   @override
   final String userId;
@@ -411,7 +412,6 @@ class UpdateProfile implements ProfileEvent {
   final String? phoneNumber;
   final String? dateOfBirth;
   final String? gender;
-// Doctor-specific fields
   final String? specialization;
   final String? licenseNumber;
 
@@ -533,8 +533,8 @@ class _$UpdateProfileCopyWithImpl<$Res>
 
 /// @nodoc
 
-class UploadAvatar implements ProfileEvent {
-  const UploadAvatar({required this.userId, required this.file});
+class UploadAvatar extends ProfileEvent {
+  const UploadAvatar({required this.userId, required this.file}) : super._();
 
   @override
   final String userId;

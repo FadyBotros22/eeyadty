@@ -126,24 +126,6 @@ class SupabaseManager {
     }
   }
 
-  // ─── Role resolution ───────────────────────────────────────────────────────
-
-  static Future<String?> getUserRole(String userId) async {
-    _logRequest('SELECT role', 'profiles', {'id': userId});
-    try {
-      final row = await client
-          .from('profiles')
-          .select('role')
-          .eq('id', userId)
-          .maybeSingle();
-      _logResponse('profiles', row);
-      return row?['role'] as String?;
-    } catch (e) {
-      _logError('profiles.getUserRole', e);
-      rethrow;
-    }
-  }
-
   // ─── Patient (client_profiles) ─────────────────────────────────────────────
 
   static Future<Map<String, dynamic>?> getClientProfile(String userId) async {

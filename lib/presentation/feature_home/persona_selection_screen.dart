@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../domain/models/enums/user_role.dart';
 import '../../domain/utils/app_constants.dart';
 import '../feature_auth/login_screen.dart';
 
@@ -65,7 +66,7 @@ class PersonaSelectionScreen extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).pushNamed(
                     LoginScreen.route,
-                    arguments: {'persona': 'client'},
+                   arguments: LoginScreenArguments(role: UserRole.patient),
                   );
                 },
               ),
@@ -80,7 +81,7 @@ class PersonaSelectionScreen extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).pushNamed(
                     LoginScreen.route,
-                    arguments: {'persona': 'doctor'},
+                    arguments: LoginScreenArguments(role: UserRole.doctor),
                   );
                 },
               ),
@@ -95,72 +96,6 @@ class PersonaSelectionScreen extends StatelessWidget {
               const SizedBox(height: 8),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  void _showDoctorPlaceholder(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppDimens.radiusXL),
-        ),
-      ),
-      builder: (_) => Padding(
-        padding: const EdgeInsets.all(AppDimens.paddingXL),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 48,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.inputBorder,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                color: AppColors.accent.withOpacity(0.12),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.local_hospital_rounded,
-                color: AppColors.accent,
-                size: 36,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text('Doctor Portal', style: AppTextStyles.h3),
-            const SizedBox(height: 8),
-            Text(
-              'The doctor portal is coming soon.\nStay tuned for updates!',
-              style:
-                  AppTextStyles.body.copyWith(color: AppColors.textSecondary),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.accent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppDimens.radiusMD),
-                  ),
-                ),
-                child: const Text('Got it', style: AppTextStyles.button),
-              ),
-            ),
-            const SizedBox(height: 8),
-          ],
         ),
       ),
     );
@@ -206,7 +141,7 @@ class _PersonaCard extends StatelessWidget {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppDimens.radiusMD),
               ),
               child: Icon(icon, color: color, size: 28),

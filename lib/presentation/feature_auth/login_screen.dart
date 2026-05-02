@@ -1,3 +1,4 @@
+import 'package:eeyadty/domain/models/enums/user_role.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/di/dependency_injection.dart';
@@ -9,10 +10,17 @@ import 'bloc/auth_event.dart';
 import 'bloc/auth_state.dart';
 import 'signup_screen.dart';
 
+class LoginScreenArguments {
+  final UserRole role;
+
+  LoginScreenArguments({required this.role});
+}
+
 class LoginScreen extends StatefulWidget {
   static const route = '/login';
 
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, required this.role});
+  final UserRole role;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -121,6 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             context.read<AuthBloc>().add(AuthEvent.signIn(
                                   email: _emailCtrl.text.trim(),
                                   password: _passwordCtrl.text,
+                              role: widget.role,
                                 ));
                           }
                         },
