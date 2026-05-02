@@ -4,8 +4,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// Central manager for all Supabase operations.
 /// Initialize once in main.dart before runApp().
 class SupabaseManager {
-  static const String _supabaseUrl = 'YOUR_SUPABASE_URL';
-  static const String _supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';
+  static const String _supabaseUrl = 'https://mwuqkoubxprhkjjdhkod.supabase.co/rest/v1/';
+  static const String _supabaseAnonKey =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13dXFrb3VieHByaGtqamRoa29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2ODUyMDMsImV4cCI6MjA5MzI2MTIwM30.CCIP3yYH4xiaNkbr4MzMvYi04vNlV2E-qut0U51qK1E';
 
   static SupabaseClient get client => Supabase.instance.client;
 
@@ -48,7 +49,8 @@ class SupabaseManager {
   static User? get currentUser => client.auth.currentUser;
   static String? get currentUserId => client.auth.currentUser?.id;
 
-  static Stream<AuthState> get authStateChanges => client.auth.onAuthStateChange;
+  static Stream<AuthState> get authStateChanges =>
+      client.auth.onAuthStateChange;
 
   // ─── Storage ──────────────────────────────────────────────────────────────
 

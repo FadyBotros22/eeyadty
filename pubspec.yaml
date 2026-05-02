@@ -39,16 +39,24 @@ dev_dependencies:
   freezed: ^3.2.5
   json_serializable: ^6.9.0
 
+assets:
+  - assets/images/
+  - assets/images/svg/
+  - assets/images/png/
+  - assets/translations/
+  - assets/fonts
+
+
 flutter:
   uses-material-design: true
   fonts:
     - family: Outfit
       fonts:
-        - asset: assets/fonts/Outfit-Regular.ttf
+        - asset: assets/fonts/outfit/Outfit-Regular.ttf
           weight: 400
-        - asset: assets/fonts/Outfit-Medium.ttf
+        - asset: assets/fonts/outfit/Outfit-Medium.ttf
           weight: 500
-        - asset: assets/fonts/Outfit-SemiBold.ttf
+        - asset: assets/fonts/outfit/Outfit-SemiBold.ttf
           weight: 600
-        - asset: assets/fonts/Outfit-Bold.ttf
+        - asset: assets/fonts/outfit/Outfit-Bold.ttf
           weight: 700
