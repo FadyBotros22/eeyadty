@@ -146,7 +146,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           GestureDetector(
                             onTap: () => Navigator.of(context)
-                                .pushNamed(SignUpScreen.route),
+                                .pushNamed(SignUpScreen.route,
+                              arguments: LoginScreenArguments(role: UserRole.doctor)),
                             child: Text(
                               'Sign Up',
                               style: AppTextStyles.body.copyWith(
