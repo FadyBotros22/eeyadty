@@ -1,8 +1,8 @@
+import 'package:eeyadty/domain/repositories/doctors_repository.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/preferences/user_preferences.dart';
 import '../../domain/repositories/auth_repository.dart';
-import '../../domain/repositories/service_repository.dart';
 import '../../domain/repositories/appointment_repository.dart';
 import '../../domain/repositories/profile_repository.dart';
 import '../../../presentation/feature_auth/bloc/auth_bloc.dart';
@@ -18,7 +18,7 @@ Future<void> configureDependencies() async {
 
   // Repositories
   getIt.registerLazySingleton<AuthRepository>(() => AuthRepository());
-  getIt.registerLazySingleton<ServiceRepository>(() => ServiceRepository());
+  getIt.registerLazySingleton<DoctorsRepository>(() => DoctorsRepository());
   getIt.registerLazySingleton<AppointmentRepository>(
       () => AppointmentRepository());
   getIt.registerLazySingleton<ProfileRepository>(() => ProfileRepository());

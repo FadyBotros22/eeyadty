@@ -13,29 +13,32 @@ class AuthRepository {
   Future<AppResult<ClientUser>> signIn({
     required String email,
     required String password,
-    required UserRole role,
+    required UserRole role, // ← keep: caller selects role on login screen
   }) async {
     try {
-      final response =
-      await SupabaseManager.signIn(email: email, password: password);
+      final response = await SupabaseManager.signIn(
+        email: email,
+        password: password,
+      );
 
       final user = response.user;
       if (user == null) {
         return AppResult.failure('Sign in failed. Please try again.');
       }
 
-      // 2. Load the role-specific profile.
-      final Map<String, dynamic>? profile = role == UserRole.doctor
-          ? await SupabaseManager.getDoctorProfile(user.id)
-          : await SupabaseManager.getClientProfile(user.id);
+      // Prefer metadata role if present, fall back to the passed-in role
+      final meta = user.userMetadata ?? {};
+      final resolvedRole = UserRoleX.fromString(
+        meta['role'] as String? ?? role.value,
+      );
 
-      final clientUser = profile != null
-          ? ClientUser.fromJson({
-        ...profile,
-        'email': user.email,
-        'role': role.value,
-      })
-          : ClientUser(id: user.id, email: user.email, role: role);
+      final clientUser = ClientUser(
+        id: user.id,
+        email: user.email,
+        fullName: meta['full_name'] as String?,
+        phoneNumber: meta['phone_number'] as String?,
+        role: resolvedRole,
+      );
 
       return AppResult.success(clientUser);
     } on AuthException catch (e) {
@@ -76,33 +79,6 @@ class AuthRepository {
       if (user == null) {
         return AppResult.failure(
             'Sign up failed. Please check your email for confirmation.');
-      }
-
-      // ── Shared profiles row (always) ────────────────────────────────────
-      await SupabaseManager.upsertProfile({
-        'id': user.id,
-        'email': email,
-        'full_name': fullName,
-        'role': role.value,
-      });
-
-      // ── Role-specific profile row ────────────────────────────────────────
-      if (role == UserRole.doctor) {
-        await SupabaseManager.upsertDoctorProfile({
-          'id': user.id,
-          'email': email,
-          'full_name': fullName,
-          'phone_number': phoneNumber ?? '',
-          'specialization': specialization ?? '',
-          'license_number': licenseNumber ?? '',
-        });
-      } else {
-        await SupabaseManager.upsertClientProfile({
-          'id': user.id,
-          'email': email,
-          'full_name': fullName,
-          'phone_number': phoneNumber ?? '',
-        });
       }
 
       return AppResult.success(

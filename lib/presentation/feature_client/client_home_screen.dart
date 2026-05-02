@@ -1,15 +1,16 @@
+import 'package:eeyadty/presentation/feature_client/tabs/services/bloc/doctors_bloc.dart';
+import 'package:eeyadty/presentation/feature_client/tabs/services/bloc/doctors_event.dart';
+import 'package:eeyadty/presentation/feature_client/tabs/services/doctors_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/di/dependency_injection.dart';
+import '../../domain/repositories/doctors_repository.dart';
 import '../../domain/repositories/appointment_repository.dart';
-import '../../domain/repositories/service_repository.dart';
 import '../../domain/repositories/profile_repository.dart';
 import '../../domain/utils/app_constants.dart';
 import 'bloc/client_home_bloc.dart';
-import 'tabs/services/services_tab.dart';
 import 'tabs/appointments/appointments_tab.dart';
 import 'tabs/profile/profile_tab.dart';
-import 'tabs/services/bloc/services_bloc.dart';
 import 'tabs/appointments/bloc/appointments_bloc.dart';
 import 'tabs/profile/bloc/profile_bloc.dart';
 
@@ -23,7 +24,8 @@ class ClientHomeScreen extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => ServicesBloc(getIt<ServiceRepository>()),
+          create: (_) => DoctorsBloc(getIt<DoctorsRepository>())
+            ..add(const DoctorsEvent.load()),
         ),
         BlocProvider(
           create: (_) => AppointmentsBloc(getIt<AppointmentRepository>()),
@@ -42,7 +44,7 @@ class _ClientHomeView extends StatelessWidget {
   const _ClientHomeView();
 
   static const _tabs = [
-    ServicesTab(),
+    DoctorsTab(),
     AppointmentsTab(),
     ProfileTab(),
   ];
@@ -71,8 +73,7 @@ class _BottomNavBar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onTap;
 
-  const _BottomNavBar(
-      {required this.selectedIndex, required this.onTap});
+  const _BottomNavBar({required this.selectedIndex, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +82,7 @@ class _BottomNavBar extends StatelessWidget {
         color: AppColors.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),
@@ -96,9 +97,9 @@ class _BottomNavBar extends StatelessWidget {
           child: Row(
             children: [
               _NavItem(
-                icon: Icons.medical_services_outlined,
-                activeIcon: Icons.medical_services_rounded,
-                label: 'Services',
+                icon: Icons.people_outline_rounded,
+                activeIcon: Icons.people_rounded,
+                label: 'Doctors',
                 isActive: selectedIndex == 0,
                 onTap: () => onTap(0),
               ),
@@ -123,6 +124,7 @@ class _BottomNavBar extends StatelessWidget {
     );
   }
 }
+
 
 class _NavItem extends StatelessWidget {
   final IconData icon;
@@ -157,7 +159,7 @@ class _NavItem extends StatelessWidget {
                     horizontal: 16, vertical: 6),
                 decoration: BoxDecoration(
                   color: isActive
-                      ? AppColors.primary.withOpacity(0.1)
+                      ? AppColors.primary.withValues(alpha: 0.1)
                       : Colors.transparent,
                   borderRadius:
                       BorderRadius.circular(AppDimens.radiusFull),

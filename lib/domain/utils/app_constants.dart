@@ -84,6 +84,15 @@ class AppTextStyles {
     color: Colors.white,
     letterSpacing: 0.3,
   );
+
+  static const TextStyle heading1 = h1;   // alias used in DoctorsTab
+  static const TextStyle heading2 = h2;   // alias used in _InitialsAvatar
+  static const TextStyle caption = TextStyle(
+    fontSize: 11,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textSecondary,
+    height: 1.4,
+  );
 }
 
 class AppDimens {

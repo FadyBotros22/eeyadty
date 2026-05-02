@@ -184,66 +184,6 @@ class SupabaseManager {
     }
   }
 
-  // ─── Shared profiles ───────────────────────────────────────────────────────
-
-  static Future<void> upsertProfile(Map<String, dynamic> data) async {
-    _logRequest('UPSERT', 'profiles', data);
-    try {
-      await client.from('profiles').upsert(data);
-      _logResponse('profiles', 'upsert ok');
-    } catch (e) {
-      _logError('profiles.upsertProfile', e);
-      rethrow;
-    }
-  }
-
-  // ─── Services ──────────────────────────────────────────────────────────────
-
-  static Future<List<Map<String, dynamic>>> getServices() async {
-    _logRequest('SELECT', 'services');
-    try {
-      final res = await client.from('services').select().order('name');
-      final list = List<Map<String, dynamic>>.from(res);
-      _logResponse('services', '${list.length} rows');
-      return list;
-    } catch (e) {
-      _logError('services.getServices', e);
-      rethrow;
-    }
-  }
-
-  static Future<List<Map<String, dynamic>>> getServicesByCategory(
-      String category) async {
-    _logRequest('SELECT', 'services', {'category': category});
-    try {
-      final res = await client
-          .from('services')
-          .select()
-          .eq('category', category)
-          .order('name');
-      final list = List<Map<String, dynamic>>.from(res);
-      _logResponse('services', '${list.length} rows');
-      return list;
-    } catch (e) {
-      _logError('services.getServicesByCategory', e);
-      rethrow;
-    }
-  }
-
-  static Future<List<Map<String, dynamic>>> getServiceCategories() async {
-    _logRequest('SELECT', 'service_categories');
-    try {
-      final res =
-      await client.from('service_categories').select().order('name');
-      final list = List<Map<String, dynamic>>.from(res);
-      _logResponse('service_categories', '${list.length} rows');
-      return list;
-    } catch (e) {
-      _logError('service_categories.getServiceCategories', e);
-      rethrow;
-    }
-  }
-
   // ─── Appointments ──────────────────────────────────────────────────────────
 
   static Future<List<Map<String, dynamic>>> getClientAppointments(
@@ -309,6 +249,39 @@ class SupabaseManager {
       return list;
     } catch (e) {
       _logError('available_slots.getAvailableSlots', e);
+      rethrow;
+    }
+  }
+
+  // ─── Doctors list ──────────────────────────────────────────────────────────
+
+  static Future<List<Map<String, dynamic>>> getDoctors() async {
+    _logRequest('SELECT', 'doctors_list');
+    try {
+      final res = await client.from('doctors_list').select();
+      final list = List<Map<String, dynamic>>.from(res);
+      _logResponse('doctors_list', '${list.length} rows');
+      return list;
+    } catch (e) {
+      _logError('doctors_list.getDoctors', e);
+      rethrow;
+    }
+  }
+
+
+  static Future<List<Map<String, dynamic>>> searchDoctors(
+      String query) async {
+    _logRequest('SELECT', 'doctors_list', {'search': query});
+    try {
+      final res = await client
+          .from('doctors_list')
+          .select()
+          .ilike('name', '%$query%');
+      final list = List<Map<String, dynamic>>.from(res);
+      _logResponse('doctors_list', '${list.length} rows');
+      return list;
+    } catch (e) {
+      _logError('doctors_list.searchDoctors', e);
       rethrow;
     }
   }
