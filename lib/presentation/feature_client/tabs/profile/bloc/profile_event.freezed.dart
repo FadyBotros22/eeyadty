@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 
 /// @nodoc
 mixin _$ProfileEvent {
-  String? get userId;
+  String get userId;
 
   /// Create a copy of ProfileEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -47,7 +47,7 @@ abstract mixin class $ProfileEventCopyWith<$Res> {
           ProfileEvent value, $Res Function(ProfileEvent) _then) =
       _$ProfileEventCopyWithImpl;
   @useResult
-  $Res call({String? userId});
+  $Res call({String userId});
 }
 
 /// @nodoc
@@ -62,13 +62,13 @@ class _$ProfileEventCopyWithImpl<$Res> implements $ProfileEventCopyWith<$Res> {
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? userId = freezed,
+    Object? userId = null,
   }) {
     return _then(_self.copyWith(
-      userId: freezed == userId
+      userId: null == userId
           ? _self.userId
           : userId // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as String,
     ));
   }
 }
@@ -184,20 +184,34 @@ extension ProfileEventPatterns on ProfileEvent {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String? userId)? load,
-    TResult Function(String? userId, String? fullName, String? phoneNumber,
-            String? dateOfBirth, String? gender)?
+    TResult Function(String userId, UserRole role)? load,
+    TResult Function(
+            String userId,
+            UserRole role,
+            String? fullName,
+            String? phoneNumber,
+            String? dateOfBirth,
+            String? gender,
+            String? specialization,
+            String? licenseNumber)?
         update,
-    TResult Function(String? userId, File? file)? uploadAvatar,
+    TResult Function(String userId, File file)? uploadAvatar,
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
       case LoadProfile() when load != null:
-        return load(_that.userId);
+        return load(_that.userId, _that.role);
       case UpdateProfile() when update != null:
-        return update(_that.userId, _that.fullName, _that.phoneNumber,
-            _that.dateOfBirth, _that.gender);
+        return update(
+            _that.userId,
+            _that.role,
+            _that.fullName,
+            _that.phoneNumber,
+            _that.dateOfBirth,
+            _that.gender,
+            _that.specialization,
+            _that.licenseNumber);
       case UploadAvatar() when uploadAvatar != null:
         return uploadAvatar(_that.userId, _that.file);
       case _:
@@ -220,19 +234,33 @@ extension ProfileEventPatterns on ProfileEvent {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String? userId) load,
-    required TResult Function(String? userId, String? fullName,
-            String? phoneNumber, String? dateOfBirth, String? gender)
+    required TResult Function(String userId, UserRole role) load,
+    required TResult Function(
+            String userId,
+            UserRole role,
+            String? fullName,
+            String? phoneNumber,
+            String? dateOfBirth,
+            String? gender,
+            String? specialization,
+            String? licenseNumber)
         update,
-    required TResult Function(String? userId, File? file) uploadAvatar,
+    required TResult Function(String userId, File file) uploadAvatar,
   }) {
     final _that = this;
     switch (_that) {
       case LoadProfile():
-        return load(_that.userId);
+        return load(_that.userId, _that.role);
       case UpdateProfile():
-        return update(_that.userId, _that.fullName, _that.phoneNumber,
-            _that.dateOfBirth, _that.gender);
+        return update(
+            _that.userId,
+            _that.role,
+            _that.fullName,
+            _that.phoneNumber,
+            _that.dateOfBirth,
+            _that.gender,
+            _that.specialization,
+            _that.licenseNumber);
       case UploadAvatar():
         return uploadAvatar(_that.userId, _that.file);
       case _:
@@ -254,19 +282,33 @@ extension ProfileEventPatterns on ProfileEvent {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String? userId)? load,
-    TResult? Function(String? userId, String? fullName, String? phoneNumber,
-            String? dateOfBirth, String? gender)?
+    TResult? Function(String userId, UserRole role)? load,
+    TResult? Function(
+            String userId,
+            UserRole role,
+            String? fullName,
+            String? phoneNumber,
+            String? dateOfBirth,
+            String? gender,
+            String? specialization,
+            String? licenseNumber)?
         update,
-    TResult? Function(String? userId, File? file)? uploadAvatar,
+    TResult? Function(String userId, File file)? uploadAvatar,
   }) {
     final _that = this;
     switch (_that) {
       case LoadProfile() when load != null:
-        return load(_that.userId);
+        return load(_that.userId, _that.role);
       case UpdateProfile() when update != null:
-        return update(_that.userId, _that.fullName, _that.phoneNumber,
-            _that.dateOfBirth, _that.gender);
+        return update(
+            _that.userId,
+            _that.role,
+            _that.fullName,
+            _that.phoneNumber,
+            _that.dateOfBirth,
+            _that.gender,
+            _that.specialization,
+            _that.licenseNumber);
       case UploadAvatar() when uploadAvatar != null:
         return uploadAvatar(_that.userId, _that.file);
       case _:
@@ -278,10 +320,11 @@ extension ProfileEventPatterns on ProfileEvent {
 /// @nodoc
 
 class LoadProfile implements ProfileEvent {
-  const LoadProfile({this.userId});
+  const LoadProfile({required this.userId, required this.role});
 
   @override
-  final String? userId;
+  final String userId;
+  final UserRole role;
 
   /// Create a copy of ProfileEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -296,15 +339,16 @@ class LoadProfile implements ProfileEvent {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is LoadProfile &&
-            (identical(other.userId, userId) || other.userId == userId));
+            (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.role, role) || other.role == role));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, userId);
+  int get hashCode => Object.hash(runtimeType, userId, role);
 
   @override
   String toString() {
-    return 'ProfileEvent.load(userId: $userId)';
+    return 'ProfileEvent.load(userId: $userId, role: $role)';
   }
 }
 
@@ -316,7 +360,7 @@ abstract mixin class $LoadProfileCopyWith<$Res>
       _$LoadProfileCopyWithImpl;
   @override
   @useResult
-  $Res call({String? userId});
+  $Res call({String userId, UserRole role});
 }
 
 /// @nodoc
@@ -331,13 +375,18 @@ class _$LoadProfileCopyWithImpl<$Res> implements $LoadProfileCopyWith<$Res> {
   @override
   @pragma('vm:prefer-inline')
   $Res call({
-    Object? userId = freezed,
+    Object? userId = null,
+    Object? role = null,
   }) {
     return _then(LoadProfile(
-      userId: freezed == userId
+      userId: null == userId
           ? _self.userId
           : userId // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as String,
+      role: null == role
+          ? _self.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as UserRole,
     ));
   }
 }
@@ -346,18 +395,25 @@ class _$LoadProfileCopyWithImpl<$Res> implements $LoadProfileCopyWith<$Res> {
 
 class UpdateProfile implements ProfileEvent {
   const UpdateProfile(
-      {this.userId,
+      {required this.userId,
+      required this.role,
       this.fullName,
       this.phoneNumber,
       this.dateOfBirth,
-      this.gender});
+      this.gender,
+      this.specialization,
+      this.licenseNumber});
 
   @override
-  final String? userId;
+  final String userId;
+  final UserRole role;
   final String? fullName;
   final String? phoneNumber;
   final String? dateOfBirth;
   final String? gender;
+// Doctor-specific fields
+  final String? specialization;
+  final String? licenseNumber;
 
   /// Create a copy of ProfileEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -373,22 +429,27 @@ class UpdateProfile implements ProfileEvent {
         (other.runtimeType == runtimeType &&
             other is UpdateProfile &&
             (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.role, role) || other.role == role) &&
             (identical(other.fullName, fullName) ||
                 other.fullName == fullName) &&
             (identical(other.phoneNumber, phoneNumber) ||
                 other.phoneNumber == phoneNumber) &&
             (identical(other.dateOfBirth, dateOfBirth) ||
                 other.dateOfBirth == dateOfBirth) &&
-            (identical(other.gender, gender) || other.gender == gender));
+            (identical(other.gender, gender) || other.gender == gender) &&
+            (identical(other.specialization, specialization) ||
+                other.specialization == specialization) &&
+            (identical(other.licenseNumber, licenseNumber) ||
+                other.licenseNumber == licenseNumber));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, userId, fullName, phoneNumber, dateOfBirth, gender);
+  int get hashCode => Object.hash(runtimeType, userId, role, fullName,
+      phoneNumber, dateOfBirth, gender, specialization, licenseNumber);
 
   @override
   String toString() {
-    return 'ProfileEvent.update(userId: $userId, fullName: $fullName, phoneNumber: $phoneNumber, dateOfBirth: $dateOfBirth, gender: $gender)';
+    return 'ProfileEvent.update(userId: $userId, role: $role, fullName: $fullName, phoneNumber: $phoneNumber, dateOfBirth: $dateOfBirth, gender: $gender, specialization: $specialization, licenseNumber: $licenseNumber)';
   }
 }
 
@@ -401,11 +462,14 @@ abstract mixin class $UpdateProfileCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String? userId,
+      {String userId,
+      UserRole role,
       String? fullName,
       String? phoneNumber,
       String? dateOfBirth,
-      String? gender});
+      String? gender,
+      String? specialization,
+      String? licenseNumber});
 }
 
 /// @nodoc
@@ -421,17 +485,24 @@ class _$UpdateProfileCopyWithImpl<$Res>
   @override
   @pragma('vm:prefer-inline')
   $Res call({
-    Object? userId = freezed,
+    Object? userId = null,
+    Object? role = null,
     Object? fullName = freezed,
     Object? phoneNumber = freezed,
     Object? dateOfBirth = freezed,
     Object? gender = freezed,
+    Object? specialization = freezed,
+    Object? licenseNumber = freezed,
   }) {
     return _then(UpdateProfile(
-      userId: freezed == userId
+      userId: null == userId
           ? _self.userId
           : userId // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as String,
+      role: null == role
+          ? _self.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as UserRole,
       fullName: freezed == fullName
           ? _self.fullName
           : fullName // ignore: cast_nullable_to_non_nullable
@@ -448,6 +519,14 @@ class _$UpdateProfileCopyWithImpl<$Res>
           ? _self.gender
           : gender // ignore: cast_nullable_to_non_nullable
               as String?,
+      specialization: freezed == specialization
+          ? _self.specialization
+          : specialization // ignore: cast_nullable_to_non_nullable
+              as String?,
+      licenseNumber: freezed == licenseNumber
+          ? _self.licenseNumber
+          : licenseNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -455,11 +534,11 @@ class _$UpdateProfileCopyWithImpl<$Res>
 /// @nodoc
 
 class UploadAvatar implements ProfileEvent {
-  const UploadAvatar({this.userId, this.file});
+  const UploadAvatar({required this.userId, required this.file});
 
   @override
-  final String? userId;
-  final File? file;
+  final String userId;
+  final File file;
 
   /// Create a copy of ProfileEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -495,7 +574,7 @@ abstract mixin class $UploadAvatarCopyWith<$Res>
       _$UploadAvatarCopyWithImpl;
   @override
   @useResult
-  $Res call({String? userId, File? file});
+  $Res call({String userId, File file});
 }
 
 /// @nodoc
@@ -510,18 +589,18 @@ class _$UploadAvatarCopyWithImpl<$Res> implements $UploadAvatarCopyWith<$Res> {
   @override
   @pragma('vm:prefer-inline')
   $Res call({
-    Object? userId = freezed,
-    Object? file = freezed,
+    Object? userId = null,
+    Object? file = null,
   }) {
     return _then(UploadAvatar(
-      userId: freezed == userId
+      userId: null == userId
           ? _self.userId
           : userId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      file: freezed == file
+              as String,
+      file: null == file
           ? _self.file
           : file // ignore: cast_nullable_to_non_nullable
-              as File?,
+              as File,
     ));
   }
 }

@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../enums/user_role.dart';
 
+import 'package:json_annotation/json_annotation.dart';
 part 'client_user.freezed.dart';
 part 'client_user.g.dart';
 
@@ -13,10 +15,21 @@ abstract class ClientUser with _$ClientUser {
     String? avatarUrl,
     String? dateOfBirth,
     String? gender,
+    @UserRoleConverter() @Default(UserRole.patient) UserRole role,
   }) = _ClientUser;
 
   factory ClientUser.fromJson(Map<String, dynamic> json) =>
       _$ClientUserFromJson(json);
 
   factory ClientUser.empty() => const ClientUser();
+}
+
+class UserRoleConverter implements JsonConverter<UserRole, String> {
+  const UserRoleConverter();
+
+  @override
+  UserRole fromJson(String json) => UserRoleX.fromString(json);
+
+  @override
+  String toJson(UserRole role) => role.value;
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../domain/models/enums/user_role.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 import '../../../domain/repositories/auth_repository.dart';
@@ -37,7 +38,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       email: event.email,
       password: event.password,
       fullName: event.fullName,
-      phoneNumber: event.phoneNumber,
+      phoneNumber: event.phoneNumber, role: UserRole.patient,
     );
     if (result.isSuccess) {
       final user = result.data!;

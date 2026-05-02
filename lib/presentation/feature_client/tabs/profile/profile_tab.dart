@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:eeyadty/domain/models/enums/user_role.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -30,7 +31,7 @@ class _ProfileTabState extends State<ProfileTab> {
     super.initState();
     final userId = getIt<UserPreferences>().currentUser.id;
     if (userId != null) {
-      context.read<ProfileBloc>().add(ProfileEvent.load(userId : userId));
+      context.read<ProfileBloc>().add(ProfileEvent.load(userId : userId, role: UserRole.patient));
     }
   }
 
@@ -226,7 +227,7 @@ class _ProfileTabState extends State<ProfileTab> {
                                               fullName: _nameCtrl.text
                                                   .trim(),
                                               phoneNumber: _phoneCtrl.text
-                                                  .trim(),
+                                                  .trim(), role: UserRole.patient,
                                             ),
                                           );
                                     }

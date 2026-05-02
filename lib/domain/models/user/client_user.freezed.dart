@@ -21,6 +21,8 @@ mixin _$ClientUser {
   String? get avatarUrl;
   String? get dateOfBirth;
   String? get gender;
+  @UserRoleConverter()
+  UserRole get role;
 
   /// Create a copy of ClientUser
   /// with the given fields replaced by the non-null parameter values.
@@ -47,17 +49,18 @@ mixin _$ClientUser {
                 other.avatarUrl == avatarUrl) &&
             (identical(other.dateOfBirth, dateOfBirth) ||
                 other.dateOfBirth == dateOfBirth) &&
-            (identical(other.gender, gender) || other.gender == gender));
+            (identical(other.gender, gender) || other.gender == gender) &&
+            (identical(other.role, role) || other.role == role));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, email, fullName, phoneNumber,
-      avatarUrl, dateOfBirth, gender);
+      avatarUrl, dateOfBirth, gender, role);
 
   @override
   String toString() {
-    return 'ClientUser(id: $id, email: $email, fullName: $fullName, phoneNumber: $phoneNumber, avatarUrl: $avatarUrl, dateOfBirth: $dateOfBirth, gender: $gender)';
+    return 'ClientUser(id: $id, email: $email, fullName: $fullName, phoneNumber: $phoneNumber, avatarUrl: $avatarUrl, dateOfBirth: $dateOfBirth, gender: $gender, role: $role)';
   }
 }
 
@@ -74,7 +77,8 @@ abstract mixin class $ClientUserCopyWith<$Res> {
       String? phoneNumber,
       String? avatarUrl,
       String? dateOfBirth,
-      String? gender});
+      String? gender,
+      @UserRoleConverter() UserRole role});
 }
 
 /// @nodoc
@@ -96,6 +100,7 @@ class _$ClientUserCopyWithImpl<$Res> implements $ClientUserCopyWith<$Res> {
     Object? avatarUrl = freezed,
     Object? dateOfBirth = freezed,
     Object? gender = freezed,
+    Object? role = null,
   }) {
     return _then(_self.copyWith(
       id: freezed == id
@@ -126,6 +131,10 @@ class _$ClientUserCopyWithImpl<$Res> implements $ClientUserCopyWith<$Res> {
           ? _self.gender
           : gender // ignore: cast_nullable_to_non_nullable
               as String?,
+      role: null == role
+          ? _self.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as UserRole,
     ));
   }
 }
@@ -230,7 +239,8 @@ extension ClientUserPatterns on ClientUser {
             String? phoneNumber,
             String? avatarUrl,
             String? dateOfBirth,
-            String? gender)?
+            String? gender,
+            @UserRoleConverter() UserRole role)?
         $default, {
     required TResult orElse(),
   }) {
@@ -244,7 +254,8 @@ extension ClientUserPatterns on ClientUser {
             _that.phoneNumber,
             _that.avatarUrl,
             _that.dateOfBirth,
-            _that.gender);
+            _that.gender,
+            _that.role);
       case _:
         return orElse();
     }
@@ -272,7 +283,8 @@ extension ClientUserPatterns on ClientUser {
             String? phoneNumber,
             String? avatarUrl,
             String? dateOfBirth,
-            String? gender)
+            String? gender,
+            @UserRoleConverter() UserRole role)
         $default,
   ) {
     final _that = this;
@@ -285,7 +297,8 @@ extension ClientUserPatterns on ClientUser {
             _that.phoneNumber,
             _that.avatarUrl,
             _that.dateOfBirth,
-            _that.gender);
+            _that.gender,
+            _that.role);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -312,7 +325,8 @@ extension ClientUserPatterns on ClientUser {
             String? phoneNumber,
             String? avatarUrl,
             String? dateOfBirth,
-            String? gender)?
+            String? gender,
+            @UserRoleConverter() UserRole role)?
         $default,
   ) {
     final _that = this;
@@ -325,7 +339,8 @@ extension ClientUserPatterns on ClientUser {
             _that.phoneNumber,
             _that.avatarUrl,
             _that.dateOfBirth,
-            _that.gender);
+            _that.gender,
+            _that.role);
       case _:
         return null;
     }
@@ -342,7 +357,8 @@ class _ClientUser implements ClientUser {
       this.phoneNumber,
       this.avatarUrl,
       this.dateOfBirth,
-      this.gender});
+      this.gender,
+      @UserRoleConverter() this.role = UserRole.patient});
   factory _ClientUser.fromJson(Map<String, dynamic> json) =>
       _$ClientUserFromJson(json);
 
@@ -360,6 +376,10 @@ class _ClientUser implements ClientUser {
   final String? dateOfBirth;
   @override
   final String? gender;
+  @override
+  @JsonKey()
+  @UserRoleConverter()
+  final UserRole role;
 
   /// Create a copy of ClientUser
   /// with the given fields replaced by the non-null parameter values.
@@ -391,17 +411,18 @@ class _ClientUser implements ClientUser {
                 other.avatarUrl == avatarUrl) &&
             (identical(other.dateOfBirth, dateOfBirth) ||
                 other.dateOfBirth == dateOfBirth) &&
-            (identical(other.gender, gender) || other.gender == gender));
+            (identical(other.gender, gender) || other.gender == gender) &&
+            (identical(other.role, role) || other.role == role));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, email, fullName, phoneNumber,
-      avatarUrl, dateOfBirth, gender);
+      avatarUrl, dateOfBirth, gender, role);
 
   @override
   String toString() {
-    return 'ClientUser(id: $id, email: $email, fullName: $fullName, phoneNumber: $phoneNumber, avatarUrl: $avatarUrl, dateOfBirth: $dateOfBirth, gender: $gender)';
+    return 'ClientUser(id: $id, email: $email, fullName: $fullName, phoneNumber: $phoneNumber, avatarUrl: $avatarUrl, dateOfBirth: $dateOfBirth, gender: $gender, role: $role)';
   }
 }
 
@@ -420,7 +441,8 @@ abstract mixin class _$ClientUserCopyWith<$Res>
       String? phoneNumber,
       String? avatarUrl,
       String? dateOfBirth,
-      String? gender});
+      String? gender,
+      @UserRoleConverter() UserRole role});
 }
 
 /// @nodoc
@@ -442,6 +464,7 @@ class __$ClientUserCopyWithImpl<$Res> implements _$ClientUserCopyWith<$Res> {
     Object? avatarUrl = freezed,
     Object? dateOfBirth = freezed,
     Object? gender = freezed,
+    Object? role = null,
   }) {
     return _then(_ClientUser(
       id: freezed == id
@@ -472,6 +495,10 @@ class __$ClientUserCopyWithImpl<$Res> implements _$ClientUserCopyWith<$Res> {
           ? _self.gender
           : gender // ignore: cast_nullable_to_non_nullable
               as String?,
+      role: null == role
+          ? _self.role
+          : role // ignore: cast_nullable_to_non_nullable
+              as UserRole,
     ));
   }
 }

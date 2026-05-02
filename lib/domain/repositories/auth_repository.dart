@@ -1,69 +1,124 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../models/enums/user_role.dart';
 import '../models/user/client_user.dart';
 import '../utils/app_result.dart';
 import '../../data/remote/supabase/supabase_manager.dart';
 
 class AuthRepository {
-  /// Sign in with email and password.
+  // ─── Sign In ──────────────────────────────────────────────────────────────
+
+  /// Signs in and returns a [ClientUser] whose [role] reflects what is stored
+  /// in Supabase. The caller can switch on [ClientUser.role] to decide which
+  /// navigator branch to push.
   Future<AppResult<ClientUser>> signIn({
     required String email,
     required String password,
   }) async {
     try {
-      final response = await SupabaseManager.signIn(
-        email: email,
-        password: password,
-      );
+      final response =
+      await SupabaseManager.signIn(email: email, password: password);
+
       final user = response.user;
       if (user == null) {
         return AppResult.failure('Sign in failed. Please try again.');
       }
-      final profile = await SupabaseManager.getClientProfile(user.id);
+
+      // 1. Resolve role from the shared profiles table.
+      final roleStr = await SupabaseManager.getUserRole(user.id);
+      final role = UserRoleX.fromString(roleStr ?? UserRole.patient.value);
+
+      // 2. Load the role-specific profile.
+      final Map<String, dynamic>? profile = role == UserRole.doctor
+          ? await SupabaseManager.getDoctorProfile(user.id)
+          : await SupabaseManager.getClientProfile(user.id);
+
       final clientUser = profile != null
-          ? ClientUser.fromJson({...profile, 'email': user.email})
-          : ClientUser(id: user.id, email: user.email);
+          ? ClientUser.fromJson({
+        ...profile,
+        'email': user.email,
+        'role': role.value,
+      })
+          : ClientUser(id: user.id, email: user.email, role: role);
+
       return AppResult.success(clientUser);
     } on AuthException catch (e) {
       return AppResult.failure(e.message);
-    } catch (e) {
+    } catch (_) {
       return AppResult.failure('An unexpected error occurred.');
     }
   }
 
-  /// Sign up a new client user.
+  // ─── Sign Up ──────────────────────────────────────────────────────────────
+
+  /// Creates an account for either a [UserRole.patient] or [UserRole.doctor].
+  /// Writes to:
+  ///   • `profiles`          — shared role + display info
+  ///   • `client_profiles`   — patient-specific details  (patients only)
+  ///   • `doctor_profiles`   — doctor-specific details   (doctors only)
   Future<AppResult<ClientUser>> signUp({
     required String email,
     required String password,
     required String fullName,
+    required UserRole role, // ← caller decides
     String? phoneNumber,
+    String? specialization, // doctors only
+    String? licenseNumber,  // doctors only
   }) async {
     try {
       final response = await SupabaseManager.signUp(
         email: email,
         password: password,
-        data: {'full_name': fullName, 'phone_number': phoneNumber ?? ''},
+        data: {
+          'full_name': fullName,
+          'phone_number': phoneNumber ?? '',
+          'role': role.value,
+        },
       );
+
       final user = response.user;
       if (user == null) {
         return AppResult.failure(
             'Sign up failed. Please check your email for confirmation.');
       }
-      // Create profile row
-      await SupabaseManager.upsertClientProfile({
+
+      // ── Shared profiles row (always) ────────────────────────────────────
+      await SupabaseManager.upsertProfile({
         'id': user.id,
         'email': email,
         'full_name': fullName,
-        'phone_number': phoneNumber ?? '',
+        'role': role.value,
       });
-      final clientUser =
-          ClientUser(id: user.id, email: email, fullName: fullName);
-      return AppResult.success(clientUser);
+
+      // ── Role-specific profile row ────────────────────────────────────────
+      if (role == UserRole.doctor) {
+        await SupabaseManager.upsertDoctorProfile({
+          'id': user.id,
+          'email': email,
+          'full_name': fullName,
+          'phone_number': phoneNumber ?? '',
+          'specialization': specialization ?? '',
+          'license_number': licenseNumber ?? '',
+        });
+      } else {
+        await SupabaseManager.upsertClientProfile({
+          'id': user.id,
+          'email': email,
+          'full_name': fullName,
+          'phone_number': phoneNumber ?? '',
+        });
+      }
+
+      return AppResult.success(
+        ClientUser(id: user.id, email: email, fullName: fullName, role: role),
+      );
     } on AuthException catch (e) {
       return AppResult.failure(e.message);
-    } catch (e) {
+    } catch (_) {
       return AppResult.failure('An unexpected error occurred.');
     }
   }
+
+  // ─── Helpers ──────────────────────────────────────────────────────────────
 
   Future<void> signOut() => SupabaseManager.signOut();
 

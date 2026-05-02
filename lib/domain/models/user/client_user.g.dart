@@ -14,6 +14,9 @@ _ClientUser _$ClientUserFromJson(Map<String, dynamic> json) => _ClientUser(
       avatarUrl: json['avatarUrl'] as String?,
       dateOfBirth: json['dateOfBirth'] as String?,
       gender: json['gender'] as String?,
+      role: json['role'] == null
+          ? UserRole.patient
+          : const UserRoleConverter().fromJson(json['role'] as String),
     );
 
 Map<String, dynamic> _$ClientUserToJson(_ClientUser instance) =>
@@ -25,4 +28,5 @@ Map<String, dynamic> _$ClientUserToJson(_ClientUser instance) =>
       'avatarUrl': instance.avatarUrl,
       'dateOfBirth': instance.dateOfBirth,
       'gender': instance.gender,
+      'role': const UserRoleConverter().toJson(instance.role),
     };

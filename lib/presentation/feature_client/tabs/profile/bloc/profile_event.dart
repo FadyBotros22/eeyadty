@@ -1,23 +1,36 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'dart:io';
+import '../../../../../domain/models/enums/user_role.dart';
 
 part 'profile_event.freezed.dart';
 
 @freezed
 class ProfileEvent with _$ProfileEvent {
-  const factory ProfileEvent.load({String? userId}) = LoadProfile;
+  // Private const constructor exposes shared getters to the mixin
+  const ProfileEvent._();
+
+  const factory ProfileEvent.load({
+    required String userId,
+    required UserRole role,
+  }) = LoadProfile;
+
   const factory ProfileEvent.update({
-    String? userId,
+    required String userId,
+    required UserRole role,
     String? fullName,
     String? phoneNumber,
     String? dateOfBirth,
     String? gender,
+    String? specialization,
+    String? licenseNumber,
   }) = UpdateProfile;
+
   const factory ProfileEvent.uploadAvatar({
-    String? userId,
-    File? file,
+    required String userId,
+    required File file,
   }) = UploadAvatar;
 
   @override
-  String? get userId => throw UnimplementedError();
+  // TODO: implement userId
+  String get userId => throw UnimplementedError();
 }
