@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseManager {
@@ -8,6 +9,42 @@ class SupabaseManager {
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13dXFrb3VieHByaGtqamRoa29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2ODUyMDMsImV4cCI6MjA5MzI2MTIwM30.CCIP3yYH4xiaNkbr4MzMvYi04vNlV2E-qut0U51qK1E';
 
   static SupabaseClient get client => Supabase.instance.client;
+
+  // ─── Logging ───────────────────────────────────────────────────────────────
+
+  static void _logRequest(String method, String table,
+      [Map<String, dynamic>? payload]) {
+    if (!kDebugMode) return;
+    final buffer = StringBuffer()
+      ..writeln('┌── SUPABASE REQUEST ──────────────────────')
+      ..writeln('│  method : $method')
+      ..writeln('│  table  : $table')
+      ..writeln('│  payload: $payload');
+    buffer.writeln('└──────────────────────────────────────────');
+    debugPrint(buffer.toString());
+  }
+
+  static void _logResponse(String table, dynamic data) {
+    if (!kDebugMode) return;
+    final buffer = StringBuffer()
+      ..writeln('┌── SUPABASE RESPONSE ─────────────────────')
+      ..writeln('│  table : $table')
+      ..writeln('│  data  : $data')
+      ..writeln('└──────────────────────────────────────────');
+    debugPrint(buffer.toString());
+  }
+
+  static void _logError(String table, Object error) {
+    if (!kDebugMode) return;
+    final buffer = StringBuffer()
+      ..writeln('┌── SUPABASE ERROR ────────────────────────')
+      ..writeln('│  table : $table')
+      ..writeln('│  error : $error')
+      ..writeln('└──────────────────────────────────────────');
+    debugPrint(buffer.toString());
+  }
+
+  // ─── Init ──────────────────────────────────────────────────────────────────
 
   static Future<void> initialize() async {
     await Supabase.initialize(url: _supabaseUrl, anonKey: _supabaseAnonKey);
@@ -20,17 +57,44 @@ class SupabaseManager {
     required String password,
     required Map<String, dynamic> data,
   }) async {
-    return client.auth.signUp(email: email, password: password, data: data);
+    _logRequest('SIGN UP', 'auth', {'email': email, ...data});
+    try {
+      final res =
+      await client.auth.signUp(email: email, password: password, data: data);
+      _logResponse('auth', {'user_id': res.user?.id, 'email': res.user?.email});
+      return res;
+    } catch (e) {
+      _logError('auth.signUp', e);
+      rethrow;
+    }
   }
 
   static Future<AuthResponse> signIn({
     required String email,
     required String password,
   }) async {
-    return client.auth.signInWithPassword(email: email, password: password);
+    _logRequest('SIGN IN', 'auth', {'email': email});
+    try {
+      final res =
+      await client.auth.signInWithPassword(email: email, password: password);
+      _logResponse('auth', {'user_id': res.user?.id, 'email': res.user?.email});
+      return res;
+    } catch (e) {
+      _logError('auth.signIn', e);
+      rethrow;
+    }
   }
 
-  static Future<void> signOut() async => client.auth.signOut();
+  static Future<void> signOut() async {
+    _logRequest('SIGN OUT', 'auth');
+    try {
+      await client.auth.signOut();
+      _logResponse('auth', 'signed out');
+    } catch (e) {
+      _logError('auth.signOut', e);
+      rethrow;
+    }
+  }
 
   static User? get currentUser => client.auth.currentUser;
   static String? get currentUserId => client.auth.currentUser?.id;
@@ -46,121 +110,224 @@ class SupabaseManager {
   }) async {
     final ext = file.path.split('.').last;
     final path = '$userId/avatar.$ext';
-    await client.storage.from(_avatarsBucket).upload(
-      path,
-      file,
-      fileOptions: const FileOptions(upsert: true),
-    );
-    return client.storage.from(_avatarsBucket).getPublicUrl(path);
+    _logRequest('UPLOAD', _avatarsBucket, {'path': path});
+    try {
+      await client.storage.from(_avatarsBucket).upload(
+        path,
+        file,
+        fileOptions: const FileOptions(upsert: true),
+      );
+      final url = client.storage.from(_avatarsBucket).getPublicUrl(path);
+      _logResponse(_avatarsBucket, {'public_url': url});
+      return url;
+    } catch (e) {
+      _logError(_avatarsBucket, e);
+      rethrow;
+    }
   }
 
   // ─── Role resolution ───────────────────────────────────────────────────────
 
-  /// Reads the `role` column from the shared `profiles` table.
-  /// Returns `'patient'`, `'doctor'`, or `null` if no row exists yet.
   static Future<String?> getUserRole(String userId) async {
-    final row = await client
-        .from('profiles')
-        .select('role')
-        .eq('id', userId)
-        .maybeSingle();
-    return row?['role'] as String?;
+    _logRequest('SELECT role', 'profiles', {'id': userId});
+    try {
+      final row = await client
+          .from('profiles')
+          .select('role')
+          .eq('id', userId)
+          .maybeSingle();
+      _logResponse('profiles', row);
+      return row?['role'] as String?;
+    } catch (e) {
+      _logError('profiles.getUserRole', e);
+      rethrow;
+    }
   }
 
   // ─── Patient (client_profiles) ─────────────────────────────────────────────
 
   static Future<Map<String, dynamic>?> getClientProfile(String userId) async {
-    return client
-        .from('client_profiles')
-        .select()
-        .eq('id', userId)
-        .maybeSingle();
+    _logRequest('SELECT', 'client_profiles', {'id': userId});
+    try {
+      final res = await client
+          .from('client_profiles')
+          .select()
+          .eq('id', userId)
+          .maybeSingle();
+      _logResponse('client_profiles', res);
+      return res;
+    } catch (e) {
+      _logError('client_profiles.getClientProfile', e);
+      rethrow;
+    }
   }
 
   static Future<void> upsertClientProfile(Map<String, dynamic> data) async {
-    await client.from('client_profiles').upsert(data);
+    _logRequest('UPSERT', 'client_profiles', data);
+    try {
+      await client.from('client_profiles').upsert(data);
+      _logResponse('client_profiles', 'upsert ok');
+    } catch (e) {
+      _logError('client_profiles.upsertClientProfile', e);
+      rethrow;
+    }
   }
 
   // ─── Doctor (doctor_profiles) ──────────────────────────────────────────────
 
   static Future<Map<String, dynamic>?> getDoctorProfile(String userId) async {
-    return client
-        .from('doctor_profiles')
-        .select()
-        .eq('id', userId)
-        .maybeSingle();
+    _logRequest('SELECT', 'doctor_profiles', {'id': userId});
+    try {
+      final res = await client
+          .from('doctor_profiles')
+          .select()
+          .eq('id', userId)
+          .maybeSingle();
+      _logResponse('doctor_profiles', res);
+      return res;
+    } catch (e) {
+      _logError('doctor_profiles.getDoctorProfile', e);
+      rethrow;
+    }
   }
 
   static Future<void> upsertDoctorProfile(Map<String, dynamic> data) async {
-    await client.from('doctor_profiles').upsert(data);
+    _logRequest('UPSERT', 'doctor_profiles', data);
+    try {
+      await client.from('doctor_profiles').upsert(data);
+      _logResponse('doctor_profiles', 'upsert ok');
+    } catch (e) {
+      _logError('doctor_profiles.upsertDoctorProfile', e);
+      rethrow;
+    }
   }
 
-  // ─── Shared profiles table (role + display info) ───────────────────────────
+  // ─── Shared profiles ───────────────────────────────────────────────────────
 
-  /// Upserts into the lightweight `profiles` table that stores role + shared
-  /// display fields (full_name, email, avatar_url). Both patient and doctor
-  /// rows live here so role look-up is a single query.
   static Future<void> upsertProfile(Map<String, dynamic> data) async {
-    await client.from('profiles').upsert(data);
+    _logRequest('UPSERT', 'profiles', data);
+    try {
+      await client.from('profiles').upsert(data);
+      _logResponse('profiles', 'upsert ok');
+    } catch (e) {
+      _logError('profiles.upsertProfile', e);
+      rethrow;
+    }
   }
 
   // ─── Services ──────────────────────────────────────────────────────────────
 
   static Future<List<Map<String, dynamic>>> getServices() async {
-    final res = await client.from('services').select().order('name');
-    return List<Map<String, dynamic>>.from(res);
+    _logRequest('SELECT', 'services');
+    try {
+      final res = await client.from('services').select().order('name');
+      final list = List<Map<String, dynamic>>.from(res);
+      _logResponse('services', '${list.length} rows');
+      return list;
+    } catch (e) {
+      _logError('services.getServices', e);
+      rethrow;
+    }
   }
 
   static Future<List<Map<String, dynamic>>> getServicesByCategory(
       String category) async {
-    final res = await client
-        .from('services')
-        .select()
-        .eq('category', category)
-        .order('name');
-    return List<Map<String, dynamic>>.from(res);
+    _logRequest('SELECT', 'services', {'category': category});
+    try {
+      final res = await client
+          .from('services')
+          .select()
+          .eq('category', category)
+          .order('name');
+      final list = List<Map<String, dynamic>>.from(res);
+      _logResponse('services', '${list.length} rows');
+      return list;
+    } catch (e) {
+      _logError('services.getServicesByCategory', e);
+      rethrow;
+    }
   }
 
   static Future<List<Map<String, dynamic>>> getServiceCategories() async {
-    final res =
-    await client.from('service_categories').select().order('name');
-    return List<Map<String, dynamic>>.from(res);
+    _logRequest('SELECT', 'service_categories');
+    try {
+      final res =
+      await client.from('service_categories').select().order('name');
+      final list = List<Map<String, dynamic>>.from(res);
+      _logResponse('service_categories', '${list.length} rows');
+      return list;
+    } catch (e) {
+      _logError('service_categories.getServiceCategories', e);
+      rethrow;
+    }
   }
 
   // ─── Appointments ──────────────────────────────────────────────────────────
 
   static Future<List<Map<String, dynamic>>> getClientAppointments(
       String clientId) async {
-    final res = await client
-        .from('appointments')
-        .select('*, services(*)')
-        .eq('client_id', clientId)
-        .order('appointment_date', ascending: false);
-    return List<Map<String, dynamic>>.from(res);
+    _logRequest('SELECT', 'appointments', {'client_id': clientId});
+    try {
+      final res = await client
+          .from('appointments')
+          .select('*, services(*)')
+          .eq('client_id', clientId)
+          .order('appointment_date', ascending: false);
+      final list = List<Map<String, dynamic>>.from(res);
+      _logResponse('appointments', '${list.length} rows');
+      return list;
+    } catch (e) {
+      _logError('appointments.getClientAppointments', e);
+      rethrow;
+    }
   }
 
   static Future<Map<String, dynamic>> bookAppointment(
       Map<String, dynamic> data) async {
-    return client.from('appointments').insert(data).select().single();
+    _logRequest('INSERT', 'appointments', data);
+    try {
+      final res =
+      await client.from('appointments').insert(data).select().single();
+      _logResponse('appointments', res);
+      return res;
+    } catch (e) {
+      _logError('appointments.bookAppointment', e);
+      rethrow;
+    }
   }
 
   static Future<void> cancelAppointment(String appointmentId) async {
-    await client
-        .from('appointments')
-        .update({'status': 'cancelled'}).eq('id', appointmentId);
+    _logRequest('UPDATE', 'appointments', {'id': appointmentId, 'status': 'cancelled'});
+    try {
+      await client
+          .from('appointments')
+          .update({'status': 'cancelled'}).eq('id', appointmentId);
+      _logResponse('appointments', 'cancelled ok');
+    } catch (e) {
+      _logError('appointments.cancelAppointment', e);
+      rethrow;
+    }
   }
 
   static Future<List<Map<String, dynamic>>> getAvailableSlots({
     required String serviceId,
     required String date,
   }) async {
-    final res = await client
-        .from('available_slots')
-        .select()
-        .eq('service_id', serviceId)
-        .eq('date', date)
-        .eq('is_booked', false)
-        .order('time');
-    return List<Map<String, dynamic>>.from(res);
+    _logRequest('SELECT', 'available_slots', {'service_id': serviceId, 'date': date});
+    try {
+      final res = await client
+          .from('available_slots')
+          .select()
+          .eq('service_id', serviceId)
+          .eq('date', date)
+          .eq('is_booked', false)
+          .order('time');
+      final list = List<Map<String, dynamic>>.from(res);
+      _logResponse('available_slots', '${list.length} rows');
+      return list;
+    } catch (e) {
+      _logError('available_slots.getAvailableSlots', e);
+      rethrow;
+    }
   }
 }
