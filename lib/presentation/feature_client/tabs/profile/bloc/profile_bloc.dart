@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'profile_event.dart';
 import 'profile_state.dart';
@@ -17,7 +16,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   FutureOr<void> _onLoad(LoadProfile event, Emitter<ProfileState> emit) async {
     emit(state.copyWith(isLoading: true, errorMessage: null));
-    final result = await _profileRepository.getProfile(event.userId ?? '');
+    final result = await _profileRepository.getProfile(event.userId);
+    print('${result.data}');
     if (result.isSuccess) {
       emit(state.copyWith(isLoading: false, user: result.data));
     } else {
@@ -48,7 +48,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       UploadAvatar event, Emitter<ProfileState> emit) async {
     emit(state.copyWith(isUpdating: true));
     final urlResult = await _profileRepository.uploadAvatar(
-        userId: event.userId ?? '', file: event.file ?? File(''));
+        userId: event.userId , file: event.file);
     if (urlResult.isSuccess) {
       final updated =
           (state.user ?? const ClientUser()).copyWith(avatarUrl: urlResult.data);

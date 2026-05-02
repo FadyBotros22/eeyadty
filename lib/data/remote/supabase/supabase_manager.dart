@@ -59,8 +59,8 @@ class SupabaseManager {
   }) async {
     _logRequest('SIGN UP', 'auth', {'email': email, ...data});
     try {
-      final res =
-      await client.auth.signUp(email: email, password: password, data: data);
+      final res = await client.auth
+          .signUp(email: email, password: password, data: data);
       _logResponse('auth', {'user_id': res.user?.id, 'email': res.user?.email});
       return res;
     } catch (e) {
@@ -75,8 +75,8 @@ class SupabaseManager {
   }) async {
     _logRequest('SIGN IN', 'auth', {'email': email});
     try {
-      final res =
-      await client.auth.signInWithPassword(email: email, password: password);
+      final res = await client.auth
+          .signInWithPassword(email: email, password: password);
       _logResponse('auth', {'user_id': res.user?.id, 'email': res.user?.email});
       return res;
     } catch (e) {
@@ -98,7 +98,8 @@ class SupabaseManager {
 
   static User? get currentUser => client.auth.currentUser;
   static String? get currentUserId => client.auth.currentUser?.id;
-  static Stream<AuthState> get authStateChanges => client.auth.onAuthStateChange;
+  static Stream<AuthState> get authStateChanges =>
+      client.auth.onAuthStateChange;
 
   // ─── Storage ───────────────────────────────────────────────────────────────
 
@@ -192,7 +193,7 @@ class SupabaseManager {
     try {
       final res = await client
           .from('appointments')
-          .select('*, services(*)')
+          .select()
           .eq('client_id', clientId)
           .order('appointment_date', ascending: false);
       final list = List<Map<String, dynamic>>.from(res);
@@ -219,7 +220,8 @@ class SupabaseManager {
   }
 
   static Future<void> cancelAppointment(String appointmentId) async {
-    _logRequest('UPDATE', 'appointments', {'id': appointmentId, 'status': 'cancelled'});
+    _logRequest('UPDATE', 'appointments',
+        {'id': appointmentId, 'status': 'cancelled'});
     try {
       await client
           .from('appointments')
@@ -232,15 +234,16 @@ class SupabaseManager {
   }
 
   static Future<List<Map<String, dynamic>>> getAvailableSlots({
-    required String serviceId,
+    required String doctorId,
     required String date,
   }) async {
-    _logRequest('SELECT', 'available_slots', {'service_id': serviceId, 'date': date});
+    _logRequest('SELECT', 'available_slots',
+        {'doctor_id': doctorId, 'date': date});
     try {
       final res = await client
           .from('available_slots')
           .select()
-          .eq('service_id', serviceId)
+          .eq('doctor_id', doctorId)
           .eq('date', date)
           .eq('is_booked', false)
           .order('time');
@@ -267,7 +270,6 @@ class SupabaseManager {
       rethrow;
     }
   }
-
 
   static Future<List<Map<String, dynamic>>> searchDoctors(
       String query) async {

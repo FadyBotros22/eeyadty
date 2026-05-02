@@ -300,7 +300,7 @@ class _InitialsAvatar extends StatelessWidget {
       width: 64,
       height: 64,
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.1),
+        color: AppColors.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppDimens.radiusMD),
       ),
       alignment: Alignment.center,
@@ -362,7 +362,7 @@ class _SpecialtyBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.08),
+        color: AppColors.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(AppDimens.radiusSM),
       ),
       child: Text(
