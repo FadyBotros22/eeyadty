@@ -1,0 +1,12 @@
+flutter_native_splash:
+  # dart run flutter_native_splash:create -f staging
+  # dart run flutter_native_splash:remove
+  color: "#FFFFFF"
+  image: assets/images/app_splash.png
+  image_dark: assets/images/app_splash.png
+  fullscreen: true
+  web: false
+
+  android_12:
+    image: assets/images/app_splash_12.png
+    color: '#FFFFFF'
