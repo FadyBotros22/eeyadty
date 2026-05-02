@@ -29,55 +29,51 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          DoctorHomeBloc(getIt<DoctorRepository>()),
-      child: BlocListener<DoctorHomeBloc, DoctorHomeState>(
-        listener: (context, state) {
-          if (state is DoctorHomeLoggedOut) {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              PersonaSelectionScreen.route,
-              (_) => false,
-            );
-          }
-        },
-        child: Scaffold(
-          backgroundColor: AppColors.background,
-          body: SafeArea(
-            child: BlocBuilder<DoctorHomeBloc, DoctorHomeState>(
-              builder: (context, state) {
-                if (state is DoctorHomeLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(
-                        color: AppColors.primary),
-                  );
-                }
-                if (state is DoctorHomeError) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(state.message,
-                          style: AppTextStyles.body,
-                          textAlign: TextAlign.center),
-                    ),
-                  );
-                }
-                return IndexedStack(
-                  index: _currentIndex,
-                  children: _tabs,
+    return BlocListener<DoctorHomeBloc, DoctorHomeState>(
+      listener: (context, state) {
+        if (state is DoctorHomeLoggedOut) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            PersonaSelectionScreen.route,
+            (_) => false,
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        body: SafeArea(
+          child: BlocBuilder<DoctorHomeBloc, DoctorHomeState>(
+            builder: (context, state) {
+              if (state is DoctorHomeLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                      color: AppColors.primary),
                 );
-              },
-            ),
-          ),
-          bottomNavigationBar: _DoctorBottomNav(
-            currentIndex: _currentIndex,
-            onTap: (i) {
-              setState(() => _currentIndex = i);
-              context
-                  .read<DoctorHomeBloc>()
-                  .add(DoctorHomeTabChanged(i));
+              }
+              if (state is DoctorHomeError) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(state.message,
+                        style: AppTextStyles.body,
+                        textAlign: TextAlign.center),
+                  ),
+                );
+              }
+              return IndexedStack(
+                index: _currentIndex,
+                children: _tabs,
+              );
             },
           ),
+        ),
+        bottomNavigationBar: _DoctorBottomNav(
+          currentIndex: _currentIndex,
+          onTap: (i) {
+            setState(() => _currentIndex = i);
+            context
+                .read<DoctorHomeBloc>()
+                .add(DoctorHomeTabChanged(i));
+          },
         ),
       ),
     );

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../domain/di/dependency_injection.dart';
+import '../../domain/repositories/doctor_repository.dart';
 import '../feature_auth/login_screen.dart';
 import '../feature_auth/signup_screen.dart';
 import '../feature_client/client_home_screen.dart';
+import '../feature_doctor/bloc/doctor_home_bloc.dart';
 import '../feature_doctor/doctor_home_screen.dart';
 import '../feature_home/persona_selection_screen.dart';
 
@@ -31,7 +35,11 @@ class RouterGenerator {
         break;
 
       case DoctorHomeScreen.route:
-        child = const DoctorHomeScreen();
+        child = child = BlocProvider(
+          create: (_) =>
+              DoctorHomeBloc(getIt<DoctorRepository>()),
+          child: DoctorHomeScreen(),
+        );
         break;
 
 
