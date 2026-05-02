@@ -1,9 +1,13 @@
+import 'package:eeyadty/presentation/feature_client/tabs/appointments/bloc/appointments_event.dart';
+import 'package:eeyadty/presentation/feature_client/tabs/profile/bloc/profile_event.dart';
 import 'package:eeyadty/presentation/feature_client/tabs/services/bloc/doctors_bloc.dart';
 import 'package:eeyadty/presentation/feature_client/tabs/services/bloc/doctors_event.dart';
 import 'package:eeyadty/presentation/feature_client/tabs/services/doctors_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../data/preferences/user_preferences.dart';
 import '../../domain/di/dependency_injection.dart';
+import '../../domain/models/enums/user_role.dart';
 import '../../domain/repositories/doctors_repository.dart';
 import '../../domain/repositories/appointment_repository.dart';
 import '../../domain/repositories/profile_repository.dart';
@@ -40,7 +44,7 @@ class ClientHomeScreen extends StatelessWidget {
   }
 }
 
-class _ClientHomeView extends StatelessWidget {
+class _ClientHomeView extends StatefulWidget {
   const _ClientHomeView();
 
   static const _tabs = [
@@ -50,6 +54,16 @@ class _ClientHomeView extends StatelessWidget {
   ];
 
   @override
+  State<_ClientHomeView> createState() => _ClientHomeViewState();
+}
+
+class _ClientHomeViewState extends State<_ClientHomeView> {
+  @override
+  void initState() {
+    context.read<ClientHomeBloc>().selectTab(0);
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<ClientHomeBloc, int>(
       builder: (context, selectedIndex) {
@@ -57,11 +71,26 @@ class _ClientHomeView extends StatelessWidget {
           backgroundColor: AppColors.background,
           body: IndexedStack(
             index: selectedIndex,
-            children: _tabs,
+            children: _ClientHomeView._tabs,
           ),
           bottomNavigationBar: _BottomNavBar(
             selectedIndex: selectedIndex,
-            onTap: (i) => context.read<ClientHomeBloc>().selectTab(i),
+            onTap: (i) {
+              switch(i){
+                case 0:
+                  context.read<DoctorsBloc>().add(const DoctorsEvent.load());
+                  break;
+                  case 1:
+                    context
+                        .read<AppointmentsBloc>()
+                        .add(AppointmentsEvent.load(getIt<UserPreferences>().currentUser.id ?? ''));
+                    break;
+                case 2:
+                  context.read<ProfileBloc>().add(ProfileEvent.load(userId : getIt<UserPreferences>().currentUser.id ?? '', role: UserRole.patient));
+                  break;
+              }
+              context.read<ClientHomeBloc>().selectTab(i);
+            },
           ),
         );
       },

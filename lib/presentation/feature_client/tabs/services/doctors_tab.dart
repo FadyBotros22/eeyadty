@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../domain/utils/app_constants.dart';
 import '../../../../domain/models/doctor_list_item/doctor_list_item.dart';
+import '../../../feature_booking/doctor_detail_screen.dart';
 import 'bloc/doctors_bloc.dart';
 import 'bloc/doctors_event.dart';
 import 'bloc/doctors_state.dart';
@@ -15,12 +16,6 @@ class DoctorsTab extends StatefulWidget {
 
 class _DoctorsTabState extends State<DoctorsTab> {
   final _searchController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<DoctorsBloc>().add(const DoctorsEvent.load());
-  }
 
   @override
   void dispose() {
@@ -38,7 +33,6 @@ class _DoctorsTabState extends State<DoctorsTab> {
           children: [
             _Header(),
             _SearchBar(controller: _searchController),
-            _SpecialtyChips(),
             Expanded(child: _DoctorList()),
           ],
         ),
@@ -95,21 +89,21 @@ class _SearchBar extends StatelessWidget {
         decoration: InputDecoration(
           hintText: 'Search by name...',
           hintStyle:
-          AppTextStyles.body.copyWith(color: AppColors.textSecondary),
+              AppTextStyles.body.copyWith(color: AppColors.textSecondary),
           prefixIcon: const Icon(Icons.search_rounded, size: 20),
           suffixIcon: ValueListenableBuilder(
             valueListenable: controller,
             builder: (_, value, __) => value.text.isEmpty
                 ? const SizedBox.shrink()
                 : IconButton(
-              icon: const Icon(Icons.close_rounded, size: 18),
-              onPressed: () {
-                controller.clear();
-                context
-                    .read<DoctorsBloc>()
-                    .add(const DoctorsEvent.search(''));
-              },
-            ),
+                    icon: const Icon(Icons.close_rounded, size: 18),
+                    onPressed: () {
+                      controller.clear();
+                      context
+                          .read<DoctorsBloc>()
+                          .add(const DoctorsEvent.search(''));
+                    },
+                  ),
           ),
           filled: true,
           fillColor: AppColors.surface,
@@ -124,81 +118,6 @@ class _SearchBar extends StatelessWidget {
   }
 }
 
-// ─── Specialty chips ──────────────────────────────────────────────────────────
-
-class _SpecialtyChips extends StatelessWidget {
-  // Derive unique specialties from loaded doctors
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<DoctorsBloc, DoctorsState>(
-      builder: (context, state) {
-        final specialties = [
-          null, // "All"
-          ...{...state.doctors.map((d) => d.category)},
-        ];
-
-        return SizedBox(
-          height: 40,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(
-                horizontal: AppDimens.paddingLG),
-            itemCount: specialties.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
-            itemBuilder: (_, i) {
-              final specialty = specialties[i];
-              final isSelected =
-                  state.selectedSpecialty == specialty;
-              return _Chip(
-                label: specialty ?? 'All',
-                isSelected: isSelected,
-                onTap: () => context
-                    .read<DoctorsBloc>()
-                    .add(DoctorsEvent.selectSpecialty(specialty)),
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _Chip extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _Chip(
-      {required this.label,
-        required this.isSelected,
-        required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding:
-        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : AppColors.surface,
-          borderRadius: BorderRadius.circular(AppDimens.radiusFull),
-        ),
-        child: Text(
-          label,
-          style: AppTextStyles.label.copyWith(
-            color: isSelected ? Colors.white : AppColors.textSecondary,
-            fontWeight:
-            isSelected ? FontWeight.w600 : FontWeight.w400,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 // ─── Doctor list ──────────────────────────────────────────────────────────────
 
 class _DoctorList extends StatelessWidget {
@@ -207,8 +126,7 @@ class _DoctorList extends StatelessWidget {
     return BlocBuilder<DoctorsBloc, DoctorsState>(
       builder: (context, state) {
         if (state.isLoading) {
-          return const Center(
-              child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (state.errorMessage != null) {
@@ -223,9 +141,8 @@ class _DoctorList extends StatelessWidget {
           padding: const EdgeInsets.all(AppDimens.paddingLG),
           itemCount: state.filteredDoctors.length,
           separatorBuilder: (_, __) =>
-          const SizedBox(height: AppDimens.paddingMD),
-          itemBuilder: (_, i) =>
-              _DoctorCard(doctor: state.filteredDoctors[i]),
+              const SizedBox(height: AppDimens.paddingMD),
+          itemBuilder: (_, i) => _DoctorCard(doctor: state.filteredDoctors[i]),
         );
       },
     );
@@ -241,19 +158,25 @@ class _DoctorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppDimens.paddingMD),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppDimens.radiusLG),
-      ),
-      child: Row(
-        children: [
-          _Avatar(doctor: doctor),
-          const SizedBox(width: AppDimens.paddingMD),
-          Expanded(child: _DoctorInfo(doctor: doctor)),
-          _BookButton(doctor: doctor),
-        ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed(DoctorDetailScreen.route,
+            arguments: DoctorDetailScreenArguments(doctor: doctor));
+      },
+      child: Container(
+        padding: const EdgeInsets.all(AppDimens.paddingMD),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppDimens.radiusLG),
+        ),
+        child: Row(
+          children: [
+            _Avatar(doctor: doctor),
+            const SizedBox(width: AppDimens.paddingMD),
+            Expanded(child: _DoctorInfo(doctor: doctor)),
+            _BookButton(doctor: doctor),
+          ],
+        ),
       ),
     );
   }
@@ -274,7 +197,8 @@ class _Avatar extends StatelessWidget {
           width: 64,
           height: 64,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => _InitialsAvatar(name: doctor.name),
+          errorBuilder: (_, __, ___) =>
+              _InitialsAvatar(name: doctor.name ),
         ),
       );
     }
@@ -306,8 +230,7 @@ class _InitialsAvatar extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(
         _initials,
-        style: AppTextStyles.heading2
-            .copyWith(color: AppColors.primary),
+        style: AppTextStyles.heading2.copyWith(color: AppColors.primary),
       ),
     );
   }
@@ -324,24 +247,23 @@ class _DoctorInfo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(doctor.name,
-            style: AppTextStyles.body
-                .copyWith(fontWeight: FontWeight.w600),
+            style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
             maxLines: 1,
             overflow: TextOverflow.ellipsis),
         const SizedBox(height: 4),
-        _SpecialtyBadge(label: doctor.category),
+        _SpecialtyBadge(label: doctor.specialty),
         const SizedBox(height: 6),
         if (doctor.bio != null)
           Text(
             doctor.bio!,
-            style: AppTextStyles.caption
-                .copyWith(color: AppColors.textSecondary),
+            style:
+                AppTextStyles.caption.copyWith(color: AppColors.textSecondary),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
         const SizedBox(height: 6),
         Text(
-          'EGP ${doctor.price.toStringAsFixed(0)}',
+          'EGP ${doctor.consultationPrice.toStringAsFixed(0)}',
           style: AppTextStyles.body.copyWith(
             color: AppColors.primary,
             fontWeight: FontWeight.w600,
@@ -385,7 +307,8 @@ class _BookButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // TODO: push to booking screen with doctor.id
+        Navigator.of(context).pushNamed(DoctorDetailScreen.route,
+            arguments: DoctorDetailScreenArguments(doctor: doctor));
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -420,8 +343,8 @@ class _EmptyView extends StatelessWidget {
               size: 48, color: AppColors.textSecondary),
           const SizedBox(height: 12),
           Text('No doctors found',
-              style: AppTextStyles.body
-                  .copyWith(color: AppColors.textSecondary)),
+              style:
+                  AppTextStyles.body.copyWith(color: AppColors.textSecondary)),
         ],
       ),
     );
@@ -439,17 +362,15 @@ class _ErrorView extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.error_outline_rounded,
-              size: 48, color: AppColors.error),
+          Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
           const SizedBox(height: 12),
           Text(message,
-              style: AppTextStyles.body
-                  .copyWith(color: AppColors.textSecondary)),
+              style:
+                  AppTextStyles.body.copyWith(color: AppColors.textSecondary)),
           const SizedBox(height: 16),
           TextButton(
-            onPressed: () => context
-                .read<DoctorsBloc>()
-                .add(const DoctorsEvent.load()),
+            onPressed: () =>
+                context.read<DoctorsBloc>().add(const DoctorsEvent.load()),
             child: const Text('Try again'),
           ),
         ],

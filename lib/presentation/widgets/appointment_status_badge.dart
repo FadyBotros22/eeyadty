@@ -33,7 +33,7 @@ class AppointmentStatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppDimens.radiusCircle),
       ),
       child: Text(
-        status.label,
+        status.name,
         style: TextStyle(
           fontFamily: 'Outfit',
           fontSize: 13,

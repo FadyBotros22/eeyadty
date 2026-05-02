@@ -1,5 +1,6 @@
 import '../models/doctor/doctor_appointment.dart';
 import '../models/doctor/doctor_user.dart';
+import '../utils/app_result.dart';
 import '../../data/remote/supabase/supabase_manager.dart';
 
 class DoctorRepository {
@@ -18,58 +19,74 @@ class DoctorRepository {
     });
   }
 
-  // ─── Appointments ─────────────────────────────────────────────────────────
-
-  Future<List<DoctorAppointment>> fetchTodayAppointments() async {
-    final userId = SupabaseManager.currentUserId;
-    if (userId == null) return [];
-
-    final today = DateTime.now();
-    final start = DateTime(today.year, today.month, today.day);
-    final end = start.add(const Duration(days: 1));
-
-    final data = await SupabaseManager.client
-        .from('appointments')
-        .select('id, patient_name, date_time, status')
-        .eq('doctor_id', userId)
-        .gte('date_time', start.toIso8601String())
-        .lt('date_time', end.toIso8601String())
-        .order('date_time');
-
-    return data.map((e) => DoctorAppointment.fromJson(e)).toList();
+  /// Update doctor profile fields (bio, specialty, consultationPrice, etc.)
+  Future<AppResult<DoctorUser>> updateProfile(DoctorUser doctor) async {
+    try {
+      await SupabaseManager.upsertDoctorProfile({
+        'id': doctor.id,
+        'fullName': doctor.fullName,
+        'phoneNumber': doctor.phoneNumber,
+        'specialty': doctor.specialty,
+        'bio': doctor.bio,
+        'consultationPrice': doctor.consultationPrice,
+        'avatarUrl': doctor.avatarUrl,
+      });
+      return AppResult.success(doctor);
+    } catch (e) {
+      return AppResult.failure('Failed to update profile.');
+    }
   }
 
-  Future<List<DoctorAppointment>> fetchAppointmentsByDate(
-      DateTime date) async {
-    final userId = SupabaseManager.currentUserId;
-    if (userId == null) return [];
 
-    final start = DateTime(date.year, date.month, date.day);
-    final end = start.add(const Duration(days: 1));
+  // ─── Appointments ─────────────────────────────────────────────────────────
+
+// DoctorRepository
+
+  Future<List<DoctorAppointment>> fetchTodayAppointments() async {
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
 
     final data = await SupabaseManager.client
-        .from('appointments')
-        .select('id, patient_name, date_time, status')
-        .eq('doctor_id', userId)
-        .gte('date_time', start.toIso8601String())
-        .lt('date_time', end.toIso8601String())
-        .order('date_time');
+        .rpc('get_doctor_appointments');
 
-    return data.map((e) => DoctorAppointment.fromJson(e)).toList();
+    return (data as List)
+        .map((e) => DoctorAppointment.fromJson(e))
+        .where((a) {
+      final d = a.date;
+      return d.year == todayDate.year &&
+          d.month == todayDate.month &&
+          d.day == todayDate.day;
+    })
+        .toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+  }
+
+  Future<List<DoctorAppointment>> fetchAppointmentsByDate(DateTime date) async {
+    final data = await SupabaseManager.client
+        .rpc('get_doctor_appointments');
+
+    return (data as List)
+        .map((e) => DoctorAppointment.fromJson(e))
+        .where((a) {
+      final d = a.date;
+      return d.year == date.year &&
+          d.month == date.month &&
+          d.day == date.day;
+    })
+        .toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
   }
 
   Future<List<DoctorAppointment>> fetchRecentPatients() async {
-    final userId = SupabaseManager.currentUserId;
-    if (userId == null) return [];
-
     final data = await SupabaseManager.client
-        .from('appointments')
-        .select('id, patient_name, date_time, status')
-        .eq('doctor_id', userId)
-        .order('date_time', ascending: false)
-        .limit(5);
+        .rpc('get_doctor_appointments');
 
-    return data.map((e) => DoctorAppointment.fromJson(e)).toList();
+    final list = (data as List)
+        .map((e) => DoctorAppointment.fromJson(e))
+        .toList()
+      ..sort((a, b) => b.date.compareTo(a.date));
+
+    return list.take(5).toList();
   }
 
   // ─── Auth ─────────────────────────────────────────────────────────────────

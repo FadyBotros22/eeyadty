@@ -8,8 +8,9 @@ class DoctorsRepository {
   }) async {
     try {
       final raw = await SupabaseManager.getDoctors();
-      return AppResult.success(
+      AppResult<List<DoctorListItem>> lol = AppResult.success(
           raw.map(DoctorListItem.fromJson).toList());
+      return lol;
     } catch (e) {
       return AppResult.failure('Failed to load doctors.');
     }

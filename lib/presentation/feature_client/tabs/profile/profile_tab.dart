@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../domain/utils/app_constants.dart';
-import '../../../feature_auth/login_screen.dart';
+import '../../../feature_home/persona_selection_screen.dart';
 import '../../../widgets/app_widgets.dart';
 import 'bloc/profile_bloc.dart';
 import 'bloc/profile_event.dart';
@@ -25,15 +25,6 @@ class _ProfileTabState extends State<ProfileTab> {
   final _nameCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   bool _editing = false;
-
-  @override
-  void initState() {
-    super.initState();
-    final userId = getIt<UserPreferences>().currentUser.id;
-    if (userId != null) {
-      context.read<ProfileBloc>().add(ProfileEvent.load(userId : userId, role: UserRole.patient));
-    }
-  }
 
   @override
   void dispose() {
@@ -59,7 +50,6 @@ class _ProfileTabState extends State<ProfileTab> {
         }
       },
       builder: (context, state) {
-        final user = state.user ?? getIt<UserPreferences>().currentUser;
         return Scaffold(
           backgroundColor: AppColors.background,
           body: SafeArea(
@@ -80,16 +70,16 @@ class _ProfileTabState extends State<ProfileTab> {
                                 onTap: () {
                                   setState(() => _editing = true);
                                   _nameCtrl.text =
-                                      user.fullName ?? '';
+                                      state.user?.fullName ?? '';
                                   _phoneCtrl.text =
-                                      user.phoneNumber ?? '';
+                                      state.user?.phoneNumber ?? '';
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
                                     color: AppColors.primary
-                                        .withOpacity(0.1),
+                                        .withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(
                                         AppDimens.radiusFull),
                                   ),
@@ -124,14 +114,13 @@ class _ProfileTabState extends State<ProfileTab> {
                                 child: CircleAvatar(
                                   radius: 48,
                                   backgroundColor:
-                                      AppColors.primary.withOpacity(0.1),
-                                  backgroundImage: user.avatarUrl != null
-                                      ? NetworkImage(user.avatarUrl!)
+                                      AppColors.primary.withValues(alpha: 0.1),
+                                  backgroundImage: state.user?.avatarUrl != null
+                                      ? NetworkImage(state.user!.avatarUrl!)
                                       : null,
-                                  child: user.avatarUrl == null
+                                  child: state.user?.avatarUrl == null
                                       ? Text(
-                                          (user.fullName ?? 'U')
-                                              .substring(0, 1)
+                                          (state.user?.fullName ?? 'U')
                                               .toUpperCase(),
                                           style: AppTextStyles.h2.copyWith(
                                             color: AppColors.primary,
@@ -170,7 +159,7 @@ class _ProfileTabState extends State<ProfileTab> {
                         const SizedBox(height: 8),
                         Center(
                           child: Text(
-                            user.email ?? '',
+                            state.user?.email ?? '',
                             style: AppTextStyles.bodySmall,
                           ),
                         ),
@@ -219,7 +208,7 @@ class _ProfileTabState extends State<ProfileTab> {
                                   label: 'Save',
                                   isLoading: state.isUpdating,
                                   onPressed: () {
-                                    final uid = user.id;
+                                    final uid = state.user?.id;
                                     if (uid != null) {
                                       context.read<ProfileBloc>().add(
                                             ProfileEvent.update(
@@ -240,11 +229,11 @@ class _ProfileTabState extends State<ProfileTab> {
                           _InfoTile(
                               icon: Icons.person_outline,
                               label: 'Full Name',
-                              value: user.fullName ?? '—'),
+                              value: state.user?.fullName ?? '—'),
                           _InfoTile(
                               icon: Icons.phone_outlined,
                               label: 'Phone',
-                              value: user.phoneNumber ?? '—'),
+                              value: state.user?.phoneNumber ?? '—'),
                         ],
                         const SizedBox(height: 32),
                         const Divider(color: AppColors.divider),
@@ -255,12 +244,12 @@ class _ProfileTabState extends State<ProfileTab> {
                           child: Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: AppColors.error.withOpacity(0.06),
+                              color: AppColors.error.withValues(alpha: 0.06),
                               borderRadius: BorderRadius.circular(
                                   AppDimens.radiusLG),
                               border: Border.all(
                                   color:
-                                      AppColors.error.withOpacity(0.2)),
+                                      AppColors.error.withValues(alpha: 0.2)),
                             ),
                             child: Row(
                               children: [
@@ -319,7 +308,7 @@ class _ProfileTabState extends State<ProfileTab> {
               Navigator.pop(context);
               getIt<AuthBloc>().add(const AuthEvent.signOut());
               Navigator.of(context).pushNamedAndRemoveUntil(
-                  LoginScreen.route,arguments: LoginScreenArguments(role: UserRole.patient), (_) => false);
+                  PersonaSelectionScreen.route, (_) => false);
             },
             child: const Text('Sign Out',
                 style: TextStyle(color: AppColors.error)),

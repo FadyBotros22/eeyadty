@@ -7,6 +7,8 @@ import '../../domain/repositories/appointment_repository.dart';
 import '../../domain/repositories/profile_repository.dart';
 import '../../../presentation/feature_auth/bloc/auth_bloc.dart';
 import '../../../presentation/feature_client/bloc/client_home_bloc.dart';
+import '../../../presentation/feature_doctor/bloc/doctor_home_bloc.dart';
+import '../repositories/booking_repository.dart';
 import '../repositories/doctor_repository.dart';
 
 final getIt = GetIt.instance;
@@ -21,13 +23,18 @@ Future<void> configureDependencies() async {
   getIt.registerLazySingleton<AuthRepository>(() => AuthRepository());
   getIt.registerLazySingleton<DoctorsRepository>(() => DoctorsRepository());
   getIt.registerLazySingleton<AppointmentRepository>(
-      () => AppointmentRepository());
+          () => AppointmentRepository());
   getIt.registerLazySingleton<ProfileRepository>(() => ProfileRepository());
-  getIt.registerLazySingleton<DoctorRepository>(
-        () => DoctorRepository(),
-  );
+  getIt.registerLazySingleton<DoctorRepository>(() => DoctorRepository());
+  getIt.registerLazySingleton<BookingRepository>(() => BookingRepository());
+
   // Blocs (singletons so they survive navigation)
   getIt.registerLazySingleton<AuthBloc>(
-      () => AuthBloc(getIt<AuthRepository>(), getIt<UserPreferences>()));
+          () => AuthBloc(getIt<AuthRepository>(), getIt<UserPreferences>()));
   getIt.registerLazySingleton<ClientHomeBloc>(() => ClientHomeBloc());
+
+  // ← NEW: Doctor home bloc wired to DoctorRepository
+  getIt.registerFactory<DoctorHomeBloc>(
+        () => DoctorHomeBloc(getIt<DoctorRepository>()),
+  );
 }

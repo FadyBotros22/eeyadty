@@ -61,7 +61,7 @@ class SupabaseManager {
     try {
       final res = await client.auth
           .signUp(email: email, password: password, data: data);
-      _logResponse('auth', {'user_id': res.user?.id, 'email': res.user?.email});
+      _logResponse('auth', {'userId': res.user?.id, 'email': res.user?.email});
       return res;
     } catch (e) {
       _logError('auth.signUp', e);
@@ -77,7 +77,7 @@ class SupabaseManager {
     try {
       final res = await client.auth
           .signInWithPassword(email: email, password: password);
-      _logResponse('auth', {'user_id': res.user?.id, 'email': res.user?.email});
+      _logResponse('auth', {'userId': res.user?.id, 'email': res.user?.email});
       return res;
     } catch (e) {
       _logError('auth.signIn', e);
@@ -146,10 +146,16 @@ class SupabaseManager {
   }
 
   static Future<void> upsertClientProfile(Map<String, dynamic> data) async {
-    _logRequest('UPSERT', 'client_profiles', data);
+    final userId = currentUserId;
+    if (userId == null) throw Exception('No authenticated user');
+
+    final payload = Map<String, dynamic>.fromEntries(
+      data.entries.where((e) => e.value != null && e.key != 'id'),
+    );
+    _logRequest('UPDATE', 'client_profiles', payload);
     try {
-      await client.from('client_profiles').upsert(data);
-      _logResponse('client_profiles', 'upsert ok');
+      await client.from('client_profiles').update(payload).eq('id', userId);
+      _logResponse('client_profiles', 'update ok');
     } catch (e) {
       _logError('client_profiles.upsertClientProfile', e);
       rethrow;
@@ -175,10 +181,17 @@ class SupabaseManager {
   }
 
   static Future<void> upsertDoctorProfile(Map<String, dynamic> data) async {
-    _logRequest('UPSERT', 'doctor_profiles', data);
+    final userId = currentUserId;
+    if (userId == null) throw Exception('No authenticated user');
+
+    // Strip null values so we don't accidentally clear existing columns.
+    final payload = Map<String, dynamic>.fromEntries(
+      data.entries.where((e) => e.value != null && e.key != 'id'),
+    );
+    _logRequest('UPDATE', 'doctor_profiles', payload);
     try {
-      await client.from('doctor_profiles').upsert(data);
-      _logResponse('doctor_profiles', 'upsert ok');
+      await client.from('doctor_profiles').update(payload).eq('id', userId);
+      _logResponse('doctor_profiles', 'update ok');
     } catch (e) {
       _logError('doctor_profiles.upsertDoctorProfile', e);
       rethrow;
@@ -187,34 +200,40 @@ class SupabaseManager {
 
   // ─── Appointments ──────────────────────────────────────────────────────────
 
-  static Future<List<Map<String, dynamic>>> getClientAppointments(
-      String clientId) async {
-    _logRequest('SELECT', 'appointments', {'client_id': clientId});
+  static Future<List<Map<String, dynamic>>> getClientAppointments() async {
+    _logRequest('RPC', 'get_patient_appointments');
     try {
-      final res = await client
-          .from('appointments')
-          .select()
-          .eq('client_id', clientId)
-          .order('appointment_date', ascending: false);
+      final res = await client.rpc('get_patient_appointments');
       final list = List<Map<String, dynamic>>.from(res);
-      _logResponse('appointments', '${list.length} rows');
+      _logResponse('get_patient_appointments', '${list.length} rows');
       return list;
     } catch (e) {
-      _logError('appointments.getClientAppointments', e);
+      _logError('get_patient_appointments.getClientAppointments', e);
       rethrow;
     }
   }
 
-  static Future<Map<String, dynamic>> bookAppointment(
-      Map<String, dynamic> data) async {
-    _logRequest('INSERT', 'appointments', data);
+  static Future<String> bookAppointment({
+    required String doctorId,
+    required String slotId,
+    required String date,
+    required String time,
+    String? notes,
+  }) async {
+    final payload = {
+      'p_doctor_id': doctorId,
+      'p_slot_id': slotId,
+      'p_date': date,
+      'p_time': time,
+      'p_notes': notes ?? '',
+    };
+    _logRequest('RPC', 'book_appointment', payload);
     try {
-      final res =
-      await client.from('appointments').insert(data).select().single();
-      _logResponse('appointments', res);
+      final res = await client.rpc('book_appointment', params: payload);
+      _logResponse('book_appointment', res);
       return res;
     } catch (e) {
-      _logError('appointments.bookAppointment', e);
+      _logError('book_appointment', e);
       rethrow;
     }
   }
@@ -238,14 +257,14 @@ class SupabaseManager {
     required String date,
   }) async {
     _logRequest('SELECT', 'available_slots',
-        {'doctor_id': doctorId, 'date': date});
+        {'doctorId': doctorId, 'date': date});
     try {
       final res = await client
           .from('available_slots')
           .select()
-          .eq('doctor_id', doctorId)
+          .eq('doctorId', doctorId)
           .eq('date', date)
-          .eq('is_booked', false)
+          .eq('isBooked', false)
           .order('time');
       final list = List<Map<String, dynamic>>.from(res);
       _logResponse('available_slots', '${list.length} rows');
@@ -259,9 +278,9 @@ class SupabaseManager {
   // ─── Doctors list ──────────────────────────────────────────────────────────
 
   static Future<List<Map<String, dynamic>>> getDoctors() async {
-    _logRequest('SELECT', 'doctors_list');
+    _logRequest('SELECT', 'get_doctors');
     try {
-      final res = await client.from('doctors_list').select();
+      final res = await client.rpc('get_doctors');
       final list = List<Map<String, dynamic>>.from(res);
       _logResponse('doctors_list', '${list.length} rows');
       return list;
@@ -284,6 +303,22 @@ class SupabaseManager {
       return list;
     } catch (e) {
       _logError('doctors_list.searchDoctors', e);
+      rethrow;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> getDoctorDetail(String doctorId) async {
+    _logRequest('SELECT', 'doctors_list', {'id': doctorId});
+    try {
+      final res = await client
+          .from('doctors_list')
+          .select()
+          .eq('id', doctorId)
+          .maybeSingle();
+      _logResponse('doctors_list', res);
+      return res;
+    } catch (e) {
+      _logError('doctors_list.getDoctorDetail', e);
       rethrow;
     }
   }

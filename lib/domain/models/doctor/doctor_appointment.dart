@@ -1,19 +1,25 @@
 class DoctorAppointment {
   final String id;
   final String patientName;
-  final DateTime dateTime;
+  final String? patientPhone;
+  final String? patientAvatar;
+  final DateTime date;
   final AppointmentStatus status;
+  final String? notes;
 
   const DoctorAppointment({
     required this.id,
     required this.patientName,
-    required this.dateTime,
+    required this.date,
     required this.status,
+    this.patientPhone,
+    this.patientAvatar,
+    this.notes,
   });
 
   String get formattedTime {
-    final h = dateTime.hour.toString().padLeft(2, '0');
-    final m = dateTime.minute.toString().padLeft(2, '0');
+    final h = date.hour.toString().padLeft(2, '0');
+    final m = date.minute.toString().padLeft(2, '0');
     return '$h:$m';
   }
 
@@ -22,25 +28,32 @@ class DoctorAppointment {
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ];
-    return '${months[dateTime.month - 1]} ${dateTime.day}, ${dateTime.year}';
+    return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
 
-  String get formattedDateTime => '${formattedDate} • ${formattedTime}';
+  String get formattedDateTime => '$formattedDate • $formattedTime';
 
   factory DoctorAppointment.fromJson(Map<String, dynamic> json) {
+    final datePart = json['appointmentDate'] as String;
+    final timePart = json['appointmentTime'] as String;
+    final dateTime = DateTime.parse('${datePart}T$timePart');
+
     return DoctorAppointment(
       id: json['id'] as String,
-      patientName: json['patient_name'] as String,
-      dateTime: DateTime.parse(json['date_time'] as String),
-      status: AppointmentStatus.fromString(json['status'] as String),
+      patientName: json['patientName'] as String? ?? 'Unknown',
+      patientPhone: json['patientPhone'] as String?,
+      patientAvatar: json['patientAvatar'] as String?,
+      date: dateTime,
+      status: AppointmentStatus.fromString(json['status'] as String? ?? ''),  // fix
+      notes: json['notes'] as String?,
     );
   }
 
   Map<String, dynamic> toJson() => {
         'id': id,
-        'patient_name': patientName,
-        'date_time': dateTime.toIso8601String(),
-        'status': status.value,
+        'patientName': patientName,
+        'dateTime': date.toIso8601String(),
+        'status': status,
       };
 }
 

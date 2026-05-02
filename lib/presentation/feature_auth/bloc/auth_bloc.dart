@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../domain/models/enums/user_role.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 import '../../../domain/repositories/auth_repository.dart';
@@ -19,8 +18,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   FutureOr<void> _onSignIn(AuthSignIn event, Emitter<AuthState> emit) async {
     emit(state.copyWith(isLoading: true, errorMessage: null, isSuccess: false));
-    final result =
-        await _authRepository.signIn(email: event.email, password: event.password, role: event.role);
+    final result = await _authRepository.signIn(
+      email: event.email,
+      password: event.password,
+      role: event.role,
+    );
     if (result.isSuccess) {
       final user = result.data!;
       _userPreferences.currentUser = user;
@@ -38,7 +40,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       email: event.email,
       password: event.password,
       fullName: event.fullName,
-      phoneNumber: event.phoneNumber, role: event.role,
+      phoneNumber: event.phoneNumber,
+      role: event.role,
+      // Doctor-only — null for patients
+      specialty: event.specialty,
+      bio: event.bio,
+      consultationPrice: event.consultationPrice,
     );
     if (result.isSuccess) {
       final user = result.data!;

@@ -8,6 +8,7 @@ class ProfileRepository {
     try {
       final raw = await SupabaseManager.getClientProfile(userId);
       if (raw == null) return AppResult.failure('Profile not found.');
+
       return AppResult.success(ClientUser.fromJson(raw));
     } catch (e) {
       return AppResult.failure('Failed to load profile.');
@@ -18,11 +19,11 @@ class ProfileRepository {
     try {
       await SupabaseManager.upsertClientProfile({
         'id': user.id,
-        'full_name': user.fullName,
-        'phone_number': user.phoneNumber,
-        'date_of_birth': user.dateOfBirth,
+        'fullName': user.fullName,
+        'phoneNumber': user.phoneNumber,
+        'dateOfBirth': user.dateOfBirth,
         'gender': user.gender,
-        'avatar_url': user.avatarUrl,
+        'avatarUrl': user.avatarUrl,
       });
       return AppResult.success(user);
     } catch (e) {

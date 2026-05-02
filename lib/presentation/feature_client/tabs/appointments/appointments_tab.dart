@@ -3,12 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../domain/models/appointment/appointment.dart';
 import '../../../../domain/utils/app_constants.dart';
 import '../../../widgets/app_widgets.dart';
-import '../../client_home_screen.dart';
 import 'bloc/appointments_bloc.dart';
 import 'bloc/appointments_event.dart';
 import 'bloc/appointments_state.dart';
-import '../../../../domain/di/dependency_injection.dart';
-import '../../../../data/preferences/user_preferences.dart';
 
 class AppointmentsTab extends StatefulWidget {
   const AppointmentsTab({super.key});
@@ -25,12 +22,6 @@ class _AppointmentsTabState extends State<AppointmentsTab>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    final userId = getIt<UserPreferences>().currentUser.id;
-    if (userId != null) {
-      context
-          .read<AppointmentsBloc>()
-          .add(AppointmentsEvent.load(userId));
-    }
   }
 
   @override
@@ -185,10 +176,12 @@ class _AppointmentList extends StatelessWidget {
           horizontal: AppDimens.paddingMD, vertical: 4),
       itemCount: appointments.length,
       separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (_, i) => _AppointmentCard(
+      itemBuilder: (_, i) {
+        return _AppointmentCard(
         appointment: appointments[i],
         showCancel: showCancel,
-      ),
+      );
+      },
     );
   }
 }
@@ -239,7 +232,7 @@ class _AppointmentCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius:
                       BorderRadius.circular(AppDimens.radiusMD),
                 ),
@@ -252,12 +245,12 @@ class _AppointmentCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      appointment.service?.name ?? 'Service',
+                      appointment.doctorName ?? 'Fady',
                       style: AppTextStyles.body
                           .copyWith(fontWeight: FontWeight.w600),
                     ),
                     Text(
-                      appointment.service?.category ?? '',
+                      appointment.specialty ?? 'General',
                       style: AppTextStyles.bodySmall,
                     ),
                   ],
@@ -267,7 +260,7 @@ class _AppointmentCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: _statusColor.withOpacity(0.1),
+                  color: _statusColor.withValues(alpha: 0.1),
                   borderRadius:
                       BorderRadius.circular(AppDimens.radiusFull),
                 ),
@@ -302,7 +295,7 @@ class _AppointmentCard extends StatelessWidget {
             ],
           ),
           if (showCancel &&
-              appointment.status == AppointmentStatus.pending) ...[
+              appointment.status == AppointmentStatus.pending || appointment.status == AppointmentStatus.confirmed) ...[
             const SizedBox(height: 12),
             GestureDetector(
               onTap: () {

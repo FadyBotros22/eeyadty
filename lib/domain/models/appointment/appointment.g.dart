@@ -9,10 +9,9 @@ part of 'appointment.dart';
 _Appointment _$AppointmentFromJson(Map<String, dynamic> json) => _Appointment(
       id: json['id'] as String?,
       clientId: json['clientId'] as String?,
-      serviceId: json['serviceId'] as String?,
-      service: json['service'] == null
-          ? null
-          : ClinicService.fromJson(json['service'] as Map<String, dynamic>),
+      doctorName: json['doctorName'] as String?,
+      doctorId: json['doctorId'] as String?,
+      specialty: json['specialty'] as String?,
       appointmentDate: json['appointmentDate'] as String?,
       appointmentTime: json['appointmentTime'] as String?,
       status: $enumDecodeNullable(_$AppointmentStatusEnumMap, json['status']),
@@ -24,8 +23,9 @@ Map<String, dynamic> _$AppointmentToJson(_Appointment instance) =>
     <String, dynamic>{
       'id': instance.id,
       'clientId': instance.clientId,
-      'serviceId': instance.serviceId,
-      'service': instance.service,
+      'doctorName': instance.doctorName,
+      'doctorId': instance.doctorId,
+      'specialty': instance.specialty,
       'appointmentDate': instance.appointmentDate,
       'appointmentTime': instance.appointmentTime,
       'status': _$AppointmentStatusEnumMap[instance.status],

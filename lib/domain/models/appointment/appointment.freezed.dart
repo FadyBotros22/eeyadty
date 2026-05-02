@@ -16,8 +16,9 @@ T _$identity<T>(T value) => value;
 mixin _$Appointment {
   String? get id;
   String? get clientId;
-  String? get serviceId;
-  ClinicService? get service;
+  String? get doctorName;
+  String? get doctorId;
+  String? get specialty;
   String? get appointmentDate;
   String? get appointmentTime;
   AppointmentStatus? get status;
@@ -42,9 +43,12 @@ mixin _$Appointment {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.clientId, clientId) ||
                 other.clientId == clientId) &&
-            (identical(other.serviceId, serviceId) ||
-                other.serviceId == serviceId) &&
-            (identical(other.service, service) || other.service == service) &&
+            (identical(other.doctorName, doctorName) ||
+                other.doctorName == doctorName) &&
+            (identical(other.doctorId, doctorId) ||
+                other.doctorId == doctorId) &&
+            (identical(other.specialty, specialty) ||
+                other.specialty == specialty) &&
             (identical(other.appointmentDate, appointmentDate) ||
                 other.appointmentDate == appointmentDate) &&
             (identical(other.appointmentTime, appointmentTime) ||
@@ -57,12 +61,22 @@ mixin _$Appointment {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, clientId, serviceId, service,
-      appointmentDate, appointmentTime, status, notes, createdAt);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      clientId,
+      doctorName,
+      doctorId,
+      specialty,
+      appointmentDate,
+      appointmentTime,
+      status,
+      notes,
+      createdAt);
 
   @override
   String toString() {
-    return 'Appointment(id: $id, clientId: $clientId, serviceId: $serviceId, service: $service, appointmentDate: $appointmentDate, appointmentTime: $appointmentTime, status: $status, notes: $notes, createdAt: $createdAt)';
+    return 'Appointment(id: $id, clientId: $clientId, doctorName: $doctorName, doctorId: $doctorId, specialty: $specialty, appointmentDate: $appointmentDate, appointmentTime: $appointmentTime, status: $status, notes: $notes, createdAt: $createdAt)';
   }
 }
 
@@ -75,15 +89,14 @@ abstract mixin class $AppointmentCopyWith<$Res> {
   $Res call(
       {String? id,
       String? clientId,
-      String? serviceId,
-      ClinicService? service,
+      String? doctorName,
+      String? doctorId,
+      String? specialty,
       String? appointmentDate,
       String? appointmentTime,
       AppointmentStatus? status,
       String? notes,
       String? createdAt});
-
-  $ClinicServiceCopyWith<$Res>? get service;
 }
 
 /// @nodoc
@@ -100,8 +113,9 @@ class _$AppointmentCopyWithImpl<$Res> implements $AppointmentCopyWith<$Res> {
   $Res call({
     Object? id = freezed,
     Object? clientId = freezed,
-    Object? serviceId = freezed,
-    Object? service = freezed,
+    Object? doctorName = freezed,
+    Object? doctorId = freezed,
+    Object? specialty = freezed,
     Object? appointmentDate = freezed,
     Object? appointmentTime = freezed,
     Object? status = freezed,
@@ -117,14 +131,18 @@ class _$AppointmentCopyWithImpl<$Res> implements $AppointmentCopyWith<$Res> {
           ? _self.clientId
           : clientId // ignore: cast_nullable_to_non_nullable
               as String?,
-      serviceId: freezed == serviceId
-          ? _self.serviceId
-          : serviceId // ignore: cast_nullable_to_non_nullable
+      doctorName: freezed == doctorName
+          ? _self.doctorName
+          : doctorName // ignore: cast_nullable_to_non_nullable
               as String?,
-      service: freezed == service
-          ? _self.service
-          : service // ignore: cast_nullable_to_non_nullable
-              as ClinicService?,
+      doctorId: freezed == doctorId
+          ? _self.doctorId
+          : doctorId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      specialty: freezed == specialty
+          ? _self.specialty
+          : specialty // ignore: cast_nullable_to_non_nullable
+              as String?,
       appointmentDate: freezed == appointmentDate
           ? _self.appointmentDate
           : appointmentDate // ignore: cast_nullable_to_non_nullable
@@ -146,20 +164,6 @@ class _$AppointmentCopyWithImpl<$Res> implements $AppointmentCopyWith<$Res> {
           : createdAt // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
-  }
-
-  /// Create a copy of Appointment
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $ClinicServiceCopyWith<$Res>? get service {
-    if (_self.service == null) {
-      return null;
-    }
-
-    return $ClinicServiceCopyWith<$Res>(_self.service!, (value) {
-      return _then(_self.copyWith(service: value));
-    });
   }
 }
 
@@ -259,8 +263,9 @@ extension AppointmentPatterns on Appointment {
     TResult Function(
             String? id,
             String? clientId,
-            String? serviceId,
-            ClinicService? service,
+            String? doctorName,
+            String? doctorId,
+            String? specialty,
             String? appointmentDate,
             String? appointmentTime,
             AppointmentStatus? status,
@@ -275,8 +280,9 @@ extension AppointmentPatterns on Appointment {
         return $default(
             _that.id,
             _that.clientId,
-            _that.serviceId,
-            _that.service,
+            _that.doctorName,
+            _that.doctorId,
+            _that.specialty,
             _that.appointmentDate,
             _that.appointmentTime,
             _that.status,
@@ -305,8 +311,9 @@ extension AppointmentPatterns on Appointment {
     TResult Function(
             String? id,
             String? clientId,
-            String? serviceId,
-            ClinicService? service,
+            String? doctorName,
+            String? doctorId,
+            String? specialty,
             String? appointmentDate,
             String? appointmentTime,
             AppointmentStatus? status,
@@ -320,8 +327,9 @@ extension AppointmentPatterns on Appointment {
         return $default(
             _that.id,
             _that.clientId,
-            _that.serviceId,
-            _that.service,
+            _that.doctorName,
+            _that.doctorId,
+            _that.specialty,
             _that.appointmentDate,
             _that.appointmentTime,
             _that.status,
@@ -349,8 +357,9 @@ extension AppointmentPatterns on Appointment {
     TResult? Function(
             String? id,
             String? clientId,
-            String? serviceId,
-            ClinicService? service,
+            String? doctorName,
+            String? doctorId,
+            String? specialty,
             String? appointmentDate,
             String? appointmentTime,
             AppointmentStatus? status,
@@ -364,8 +373,9 @@ extension AppointmentPatterns on Appointment {
         return $default(
             _that.id,
             _that.clientId,
-            _that.serviceId,
-            _that.service,
+            _that.doctorName,
+            _that.doctorId,
+            _that.specialty,
             _that.appointmentDate,
             _that.appointmentTime,
             _that.status,
@@ -383,8 +393,9 @@ class _Appointment implements Appointment {
   const _Appointment(
       {this.id,
       this.clientId,
-      this.serviceId,
-      this.service,
+      this.doctorName,
+      this.doctorId,
+      this.specialty,
       this.appointmentDate,
       this.appointmentTime,
       this.status,
@@ -398,9 +409,11 @@ class _Appointment implements Appointment {
   @override
   final String? clientId;
   @override
-  final String? serviceId;
+  final String? doctorName;
   @override
-  final ClinicService? service;
+  final String? doctorId;
+  @override
+  final String? specialty;
   @override
   final String? appointmentDate;
   @override
@@ -435,9 +448,12 @@ class _Appointment implements Appointment {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.clientId, clientId) ||
                 other.clientId == clientId) &&
-            (identical(other.serviceId, serviceId) ||
-                other.serviceId == serviceId) &&
-            (identical(other.service, service) || other.service == service) &&
+            (identical(other.doctorName, doctorName) ||
+                other.doctorName == doctorName) &&
+            (identical(other.doctorId, doctorId) ||
+                other.doctorId == doctorId) &&
+            (identical(other.specialty, specialty) ||
+                other.specialty == specialty) &&
             (identical(other.appointmentDate, appointmentDate) ||
                 other.appointmentDate == appointmentDate) &&
             (identical(other.appointmentTime, appointmentTime) ||
@@ -450,12 +466,22 @@ class _Appointment implements Appointment {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, clientId, serviceId, service,
-      appointmentDate, appointmentTime, status, notes, createdAt);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      clientId,
+      doctorName,
+      doctorId,
+      specialty,
+      appointmentDate,
+      appointmentTime,
+      status,
+      notes,
+      createdAt);
 
   @override
   String toString() {
-    return 'Appointment(id: $id, clientId: $clientId, serviceId: $serviceId, service: $service, appointmentDate: $appointmentDate, appointmentTime: $appointmentTime, status: $status, notes: $notes, createdAt: $createdAt)';
+    return 'Appointment(id: $id, clientId: $clientId, doctorName: $doctorName, doctorId: $doctorId, specialty: $specialty, appointmentDate: $appointmentDate, appointmentTime: $appointmentTime, status: $status, notes: $notes, createdAt: $createdAt)';
   }
 }
 
@@ -470,16 +496,14 @@ abstract mixin class _$AppointmentCopyWith<$Res>
   $Res call(
       {String? id,
       String? clientId,
-      String? serviceId,
-      ClinicService? service,
+      String? doctorName,
+      String? doctorId,
+      String? specialty,
       String? appointmentDate,
       String? appointmentTime,
       AppointmentStatus? status,
       String? notes,
       String? createdAt});
-
-  @override
-  $ClinicServiceCopyWith<$Res>? get service;
 }
 
 /// @nodoc
@@ -496,8 +520,9 @@ class __$AppointmentCopyWithImpl<$Res> implements _$AppointmentCopyWith<$Res> {
   $Res call({
     Object? id = freezed,
     Object? clientId = freezed,
-    Object? serviceId = freezed,
-    Object? service = freezed,
+    Object? doctorName = freezed,
+    Object? doctorId = freezed,
+    Object? specialty = freezed,
     Object? appointmentDate = freezed,
     Object? appointmentTime = freezed,
     Object? status = freezed,
@@ -513,14 +538,18 @@ class __$AppointmentCopyWithImpl<$Res> implements _$AppointmentCopyWith<$Res> {
           ? _self.clientId
           : clientId // ignore: cast_nullable_to_non_nullable
               as String?,
-      serviceId: freezed == serviceId
-          ? _self.serviceId
-          : serviceId // ignore: cast_nullable_to_non_nullable
+      doctorName: freezed == doctorName
+          ? _self.doctorName
+          : doctorName // ignore: cast_nullable_to_non_nullable
               as String?,
-      service: freezed == service
-          ? _self.service
-          : service // ignore: cast_nullable_to_non_nullable
-              as ClinicService?,
+      doctorId: freezed == doctorId
+          ? _self.doctorId
+          : doctorId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      specialty: freezed == specialty
+          ? _self.specialty
+          : specialty // ignore: cast_nullable_to_non_nullable
+              as String?,
       appointmentDate: freezed == appointmentDate
           ? _self.appointmentDate
           : appointmentDate // ignore: cast_nullable_to_non_nullable
@@ -542,20 +571,6 @@ class __$AppointmentCopyWithImpl<$Res> implements _$AppointmentCopyWith<$Res> {
           : createdAt // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
-  }
-
-  /// Create a copy of Appointment
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $ClinicServiceCopyWith<$Res>? get service {
-    if (_self.service == null) {
-      return null;
-    }
-
-    return $ClinicServiceCopyWith<$Res>(_self.service!, (value) {
-      return _then(_self.copyWith(service: value));
-    });
   }
 }
 

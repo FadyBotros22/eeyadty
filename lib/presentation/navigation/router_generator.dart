@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/di/dependency_injection.dart';
 import '../../domain/repositories/doctor_repository.dart';
+import '../../domain/repositories/booking_repository.dart';
 import '../feature_auth/login_screen.dart';
 import '../feature_auth/signup_screen.dart';
+import '../feature_booking/bloc/booking_bloc.dart';
+import '../feature_booking/booking_screen.dart';
+import '../feature_booking/doctor_detail_screen.dart';
 import '../feature_client/client_home_screen.dart';
 import '../feature_doctor/bloc/doctor_home_bloc.dart';
 import '../feature_doctor/doctor_home_screen.dart';
@@ -28,6 +32,21 @@ class RouterGenerator {
       case SignUpScreen.route:
         var args = settings.arguments as LoginScreenArguments;
         child = SignUpScreen(role: args.role);
+        break;
+
+      case DoctorDetailScreen.route:
+        var args = settings.arguments as DoctorDetailScreenArguments;
+        child = DoctorDetailScreen(doctor: args.doctor,);
+        break;
+
+
+      case BookAppointmentScreen.route:
+        var args = settings.arguments as DoctorDetailScreenArguments;
+        child = BlocProvider(
+                create: (_) =>
+                    BookingBloc(getIt<BookingRepository>()),
+                child: BookAppointmentScreen(doctor: args.doctor),
+              );
         break;
 
       case ClientHomeScreen.route:

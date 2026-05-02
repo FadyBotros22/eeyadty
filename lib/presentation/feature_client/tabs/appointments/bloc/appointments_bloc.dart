@@ -18,7 +18,7 @@ class AppointmentsBloc extends Bloc<AppointmentsEvent, AppointmentsState> {
   FutureOr<void> _onLoad(
       LoadAppointments event, Emitter<AppointmentsState> emit) async {
     emit(state.copyWith(isLoading: true, errorMessage: null));
-    final result = await _appointmentRepository.getAppointments(event.clientId);
+    final result = await _appointmentRepository.getAppointments();
     if (result.isSuccess) {
       emit(state.copyWith(isLoading: false, appointments: result.data!));
     } else {
@@ -52,12 +52,14 @@ class AppointmentsBloc extends Bloc<AppointmentsEvent, AppointmentsState> {
       date: event.date,
       time: event.time,
       notes: event.notes,
+      doctorId: event.doctorId,
+      slotId: event.slotId,
     );
     if (result.isSuccess) {
       emit(state.copyWith(
         isBooking: false,
         bookingSuccess: true,
-        appointments: [result.data!, ...state.appointments],
+        // appointments: [result.data!, ...state.appointments],
       ));
     } else {
       emit(state.copyWith(isBooking: false, errorMessage: result.error));

@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../service/service.dart';
 
 part 'appointment.freezed.dart';
 part 'appointment.g.dart';
@@ -11,8 +10,9 @@ abstract class Appointment with _$Appointment {
   const factory Appointment({
     String? id,
     String? clientId,
-    String? serviceId,
-    ClinicService? service,
+    String? doctorName,
+    String? doctorId,
+    String? specialty,
     String? appointmentDate,
     String? appointmentTime,
     AppointmentStatus? status,

@@ -10,6 +10,8 @@ class AppointmentsEvent with _$AppointmentsEvent {
   const factory AppointmentsEvent.book({
     required String clientId,
     required String serviceId,
+    required String doctorId,
+    required String slotId,
     required String date,
     required String time,
     String? notes,

@@ -85,8 +85,8 @@ class AppTextStyles {
     letterSpacing: 0.3,
   );
 
-  static const TextStyle heading1 = h1;   // alias used in DoctorsTab
-  static const TextStyle heading2 = h2;   // alias used in _InitialsAvatar
+  static const TextStyle heading1 = h1;
+  static const TextStyle heading2 = h2;
   static const TextStyle caption = TextStyle(
     fontSize: 11,
     fontWeight: FontWeight.w400,

@@ -17,7 +17,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   FutureOr<void> _onLoad(LoadProfile event, Emitter<ProfileState> emit) async {
     emit(state.copyWith(isLoading: true, errorMessage: null));
     final result = await _profileRepository.getProfile(event.userId);
-    print('${result.data}');
     if (result.isSuccess) {
       emit(state.copyWith(isLoading: false, user: result.data));
     } else {

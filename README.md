@@ -54,10 +54,10 @@ static const String _supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';
 create table client_profiles (
   id uuid primary key references auth.users(id),
   email text,
-  full_name text,
-  phone_number text,
-  avatar_url text,
-  date_of_birth text,
+  fullName text,
+  phoneNumber text,
+  avatarUrl text,
+  dateOfBirth text,
   gender text,
   created_at timestamptz default now()
 );
@@ -84,10 +84,10 @@ create table services (
 -- Appointments
 create table appointments (
   id uuid primary key default gen_random_uuid(),
-  client_id uuid references client_profiles(id),
-  service_id uuid references services(id),
-  appointment_date text,
-  appointment_time text,
+  clientId uuid references client_profiles(id),
+  serviceId uuid references services(id),
+  appointmentDate text,
+  appointmentTime text,
   status text default 'pending',
   notes text,
   created_at timestamptz default now()
@@ -96,10 +96,10 @@ create table appointments (
 -- Available slots
 create table available_slots (
   id uuid primary key default gen_random_uuid(),
-  service_id uuid references services(id),
+  serviceId uuid references services(id),
   date text,
   time text,
-  is_booked boolean default false
+  isBooked boolean default false
 );
 ```
 

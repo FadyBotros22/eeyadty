@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../enums/user_role.dart';
 
-import 'package:json_annotation/json_annotation.dart';
 part 'client_user.freezed.dart';
 part 'client_user.g.dart';
 

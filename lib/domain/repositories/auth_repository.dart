@@ -7,13 +7,10 @@ import '../../data/remote/supabase/supabase_manager.dart';
 class AuthRepository {
   // ─── Sign In ──────────────────────────────────────────────────────────────
 
-  /// Signs in and returns a [ClientUser] whose [role] reflects what is stored
-  /// in Supabase. The caller can switch on [ClientUser.role] to decide which
-  /// navigator branch to push.
   Future<AppResult<ClientUser>> signIn({
     required String email,
     required String password,
-    required UserRole role, // ← keep: caller selects role on login screen
+    required UserRole role,
   }) async {
     try {
       final response = await SupabaseManager.signIn(
@@ -26,7 +23,6 @@ class AuthRepository {
         return AppResult.failure('Sign in failed. Please try again.');
       }
 
-      // Prefer metadata role if present, fall back to the passed-in role
       final meta = user.userMetadata ?? {};
       final resolvedRole = UserRoleX.fromString(
         meta['role'] as String? ?? role.value,
@@ -35,8 +31,8 @@ class AuthRepository {
       final clientUser = ClientUser(
         id: user.id,
         email: user.email,
-        fullName: meta['full_name'] as String?,
-        phoneNumber: meta['phone_number'] as String?,
+        fullName: meta['fullName'] as String?,
+        phoneNumber: meta['phoneNumber'] as String?,
         role: resolvedRole,
       );
 
@@ -50,27 +46,26 @@ class AuthRepository {
 
   // ─── Sign Up ──────────────────────────────────────────────────────────────
 
-  /// Creates an account for either a [UserRole.patient] or [UserRole.doctor].
-  /// Writes to:
-  ///   • `profiles`          — shared role + display info
-  ///   • `client_profiles`   — patient-specific details  (patients only)
-  ///   • `doctor_profiles`   — doctor-specific details   (doctors only)
+  /// Creates an account. For doctors, also upserts `doctor_profiles` with
+  /// specialty, bio, and consultationPrice.
   Future<AppResult<ClientUser>> signUp({
     required String email,
     required String password,
     required String fullName,
-    required UserRole role, // ← caller decides
+    required UserRole role,
     String? phoneNumber,
-    String? specialization, // doctors only
-    String? licenseNumber,  // doctors only
+    // Doctor-only fields
+    String? specialty,
+    String? bio,
+    double? consultationPrice,
   }) async {
     try {
       final response = await SupabaseManager.signUp(
         email: email,
         password: password,
         data: {
-          'full_name': fullName,
-          'phone_number': phoneNumber ?? '',
+          'fullName': fullName,
+          'phoneNumber': phoneNumber ?? '',
           'role': role.value,
         },
       );
@@ -79,6 +74,17 @@ class AuthRepository {
       if (user == null) {
         return AppResult.failure(
             'Sign up failed. Please check your email for confirmation.');
+      }
+
+      if (role == UserRole.doctor) {
+        await SupabaseManager.upsertDoctorProfile({
+          'id': user.id,
+          'fullName': fullName,
+          'phoneNumber': phoneNumber,
+          'specialty': specialty,
+          'bio': bio,
+          'consultationPrice': consultationPrice,
+        });
       }
 
       return AppResult.success(

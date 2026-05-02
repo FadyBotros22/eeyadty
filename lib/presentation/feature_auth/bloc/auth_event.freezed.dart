@@ -146,8 +146,15 @@ extension AuthEventPatterns on AuthEvent {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String email, String password, UserRole role)? signIn,
-    TResult Function(String email, String password, String fullName,
-            UserRole role, String? phoneNumber)?
+    TResult Function(
+            String email,
+            String password,
+            String fullName,
+            UserRole role,
+            String? phoneNumber,
+            String? specialty,
+            String? bio,
+            double? consultationPrice)?
         signUp,
     TResult Function()? signOut,
     required TResult orElse(),
@@ -157,8 +164,15 @@ extension AuthEventPatterns on AuthEvent {
       case AuthSignIn() when signIn != null:
         return signIn(_that.email, _that.password, _that.role);
       case AuthSignUp() when signUp != null:
-        return signUp(_that.email, _that.password, _that.fullName, _that.role,
-            _that.phoneNumber);
+        return signUp(
+            _that.email,
+            _that.password,
+            _that.fullName,
+            _that.role,
+            _that.phoneNumber,
+            _that.specialty,
+            _that.bio,
+            _that.consultationPrice);
       case AuthSignOut() when signOut != null:
         return signOut();
       case _:
@@ -183,8 +197,15 @@ extension AuthEventPatterns on AuthEvent {
   TResult when<TResult extends Object?>({
     required TResult Function(String email, String password, UserRole role)
         signIn,
-    required TResult Function(String email, String password, String fullName,
-            UserRole role, String? phoneNumber)
+    required TResult Function(
+            String email,
+            String password,
+            String fullName,
+            UserRole role,
+            String? phoneNumber,
+            String? specialty,
+            String? bio,
+            double? consultationPrice)
         signUp,
     required TResult Function() signOut,
   }) {
@@ -193,8 +214,15 @@ extension AuthEventPatterns on AuthEvent {
       case AuthSignIn():
         return signIn(_that.email, _that.password, _that.role);
       case AuthSignUp():
-        return signUp(_that.email, _that.password, _that.fullName, _that.role,
-            _that.phoneNumber);
+        return signUp(
+            _that.email,
+            _that.password,
+            _that.fullName,
+            _that.role,
+            _that.phoneNumber,
+            _that.specialty,
+            _that.bio,
+            _that.consultationPrice);
       case AuthSignOut():
         return signOut();
       case _:
@@ -217,8 +245,15 @@ extension AuthEventPatterns on AuthEvent {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String email, String password, UserRole role)? signIn,
-    TResult? Function(String email, String password, String fullName,
-            UserRole role, String? phoneNumber)?
+    TResult? Function(
+            String email,
+            String password,
+            String fullName,
+            UserRole role,
+            String? phoneNumber,
+            String? specialty,
+            String? bio,
+            double? consultationPrice)?
         signUp,
     TResult? Function()? signOut,
   }) {
@@ -227,8 +262,15 @@ extension AuthEventPatterns on AuthEvent {
       case AuthSignIn() when signIn != null:
         return signIn(_that.email, _that.password, _that.role);
       case AuthSignUp() when signUp != null:
-        return signUp(_that.email, _that.password, _that.fullName, _that.role,
-            _that.phoneNumber);
+        return signUp(
+            _that.email,
+            _that.password,
+            _that.fullName,
+            _that.role,
+            _that.phoneNumber,
+            _that.specialty,
+            _that.bio,
+            _that.consultationPrice);
       case AuthSignOut() when signOut != null:
         return signOut();
       case _:
@@ -324,13 +366,20 @@ class AuthSignUp implements AuthEvent {
       required this.password,
       required this.fullName,
       required this.role,
-      this.phoneNumber});
+      this.phoneNumber,
+      this.specialty,
+      this.bio,
+      this.consultationPrice});
 
   final String email;
   final String password;
   final String fullName;
   final UserRole role;
   final String? phoneNumber;
+// Doctor-only fields
+  final String? specialty;
+  final String? bio;
+  final double? consultationPrice;
 
   /// Create a copy of AuthEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -351,16 +400,21 @@ class AuthSignUp implements AuthEvent {
                 other.fullName == fullName) &&
             (identical(other.role, role) || other.role == role) &&
             (identical(other.phoneNumber, phoneNumber) ||
-                other.phoneNumber == phoneNumber));
+                other.phoneNumber == phoneNumber) &&
+            (identical(other.specialty, specialty) ||
+                other.specialty == specialty) &&
+            (identical(other.bio, bio) || other.bio == bio) &&
+            (identical(other.consultationPrice, consultationPrice) ||
+                other.consultationPrice == consultationPrice));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, email, password, fullName, role, phoneNumber);
+  int get hashCode => Object.hash(runtimeType, email, password, fullName, role,
+      phoneNumber, specialty, bio, consultationPrice);
 
   @override
   String toString() {
-    return 'AuthEvent.signUp(email: $email, password: $password, fullName: $fullName, role: $role, phoneNumber: $phoneNumber)';
+    return 'AuthEvent.signUp(email: $email, password: $password, fullName: $fullName, role: $role, phoneNumber: $phoneNumber, specialty: $specialty, bio: $bio, consultationPrice: $consultationPrice)';
   }
 }
 
@@ -376,7 +430,10 @@ abstract mixin class $AuthSignUpCopyWith<$Res>
       String password,
       String fullName,
       UserRole role,
-      String? phoneNumber});
+      String? phoneNumber,
+      String? specialty,
+      String? bio,
+      double? consultationPrice});
 }
 
 /// @nodoc
@@ -395,6 +452,9 @@ class _$AuthSignUpCopyWithImpl<$Res> implements $AuthSignUpCopyWith<$Res> {
     Object? fullName = null,
     Object? role = null,
     Object? phoneNumber = freezed,
+    Object? specialty = freezed,
+    Object? bio = freezed,
+    Object? consultationPrice = freezed,
   }) {
     return _then(AuthSignUp(
       email: null == email
@@ -417,6 +477,18 @@ class _$AuthSignUpCopyWithImpl<$Res> implements $AuthSignUpCopyWith<$Res> {
           ? _self.phoneNumber
           : phoneNumber // ignore: cast_nullable_to_non_nullable
               as String?,
+      specialty: freezed == specialty
+          ? _self.specialty
+          : specialty // ignore: cast_nullable_to_non_nullable
+              as String?,
+      bio: freezed == bio
+          ? _self.bio
+          : bio // ignore: cast_nullable_to_non_nullable
+              as String?,
+      consultationPrice: freezed == consultationPrice
+          ? _self.consultationPrice
+          : consultationPrice // ignore: cast_nullable_to_non_nullable
+              as double?,
     ));
   }
 }

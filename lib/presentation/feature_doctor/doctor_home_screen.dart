@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/di/dependency_injection.dart';
-import '../../domain/repositories/doctor_repository.dart';
 import '../../domain/utils/app_constants.dart';
 import '../feature_home/persona_selection_screen.dart';
 import 'bloc/doctor_home_bloc.dart';
@@ -9,19 +8,33 @@ import 'tabs/doctor_patients_tab.dart';
 import 'tabs/doctor_profile_tab.dart';
 import 'tabs/doctor_schedule_tab.dart';
 
-class DoctorHomeScreen extends StatefulWidget {
+class DoctorHomeScreen extends StatelessWidget {
   static const route = '/doctor-home';
 
   const DoctorHomeScreen({super.key});
 
   @override
-  State<DoctorHomeScreen> createState() => _DoctorHomeScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      // registerFactory so every DoctorHomeScreen gets a fresh bloc
+      create: (_) =>
+      getIt<DoctorHomeBloc>()..add(DoctorHomeStarted()),
+      child: const _DoctorHomeView(),
+    );
+  }
 }
 
-class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
+class _DoctorHomeView extends StatefulWidget {
+  const _DoctorHomeView();
+
+  @override
+  State<_DoctorHomeView> createState() => _DoctorHomeViewState();
+}
+
+class _DoctorHomeViewState extends State<_DoctorHomeView> {
   int _currentIndex = 0;
 
-  final _tabs = const [
+  static const _tabs = [
     DoctorScheduleTab(),
     DoctorPatientsTab(),
     DoctorProfileTab(),
@@ -34,7 +47,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
         if (state is DoctorHomeLoggedOut) {
           Navigator.of(context).pushNamedAndRemoveUntil(
             PersonaSelectionScreen.route,
-            (_) => false,
+                (_) => false,
           );
         }
       },
@@ -70,9 +83,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
           currentIndex: _currentIndex,
           onTap: (i) {
             setState(() => _currentIndex = i);
-            context
-                .read<DoctorHomeBloc>()
-                .add(DoctorHomeTabChanged(i));
+            context.read<DoctorHomeBloc>().add(DoctorHomeTabChanged(i));
           },
         ),
       ),
@@ -95,31 +106,38 @@ class _DoctorBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          top: BorderSide(color: AppColors.inputBorder, width: 1),
-        ),
+        color: AppColors.surface,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
+          ),
+        ],
       ),
       child: SafeArea(
         top: false,
-        child: SizedBox(
-          height: 64,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
             children: [
               _NavItem(
                 icon: Icons.calendar_today_outlined,
+                activeIcon: Icons.calendar_today_rounded,
                 label: 'Schedule',
                 isSelected: currentIndex == 0,
                 onTap: () => onTap(0),
               ),
               _NavItem(
                 icon: Icons.assignment_outlined,
+                activeIcon: Icons.assignment_rounded,
                 label: 'Patients',
                 isSelected: currentIndex == 1,
                 onTap: () => onTap(1),
               ),
               _NavItem(
-                icon: Icons.person_outline,
+                icon: Icons.person_outline_rounded,
+                activeIcon: Icons.person_rounded,
                 label: 'Profile',
                 isSelected: currentIndex == 2,
                 onTap: () => onTap(2),
@@ -134,12 +152,14 @@ class _DoctorBottomNav extends StatelessWidget {
 
 class _NavItem extends StatelessWidget {
   final IconData icon;
+  final IconData activeIcon;
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _NavItem({
     required this.icon,
+    required this.activeIcon,
     required this.label,
     required this.isSelected,
     required this.onTap,
@@ -147,17 +167,28 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        isSelected ? AppColors.primary : AppColors.textSecondary;
-
+    final color = isSelected ? AppColors.primary : AppColors.textSecondary;
     return Expanded(
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: color, size: 24),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? AppColors.primary.withValues(alpha: 0.1)
+                    : Colors.transparent,
+                borderRadius:
+                BorderRadius.circular(AppDimens.radiusFull),
+              ),
+              child: Icon(isSelected ? activeIcon : icon,
+                  color: color, size: 24),
+            ),
             const SizedBox(height: 4),
             Text(
               label,
@@ -165,7 +196,7 @@ class _NavItem extends StatelessWidget {
                 fontFamily: 'Outfit',
                 fontSize: 11,
                 fontWeight:
-                    isSelected ? FontWeight.w600 : FontWeight.w400,
+                isSelected ? FontWeight.w600 : FontWeight.w400,
                 color: color,
               ),
             ),

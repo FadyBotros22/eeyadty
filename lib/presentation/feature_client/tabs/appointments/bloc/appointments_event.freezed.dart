@@ -148,8 +148,8 @@ extension AppointmentsEventPatterns on AppointmentsEvent {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String clientId)? load,
     TResult Function(String appointmentId)? cancel,
-    TResult Function(String clientId, String serviceId, String date,
-            String time, String? notes)?
+    TResult Function(String clientId, String serviceId, String doctorId,
+            String slotId, String date, String time, String? notes)?
         book,
     required TResult orElse(),
   }) {
@@ -160,8 +160,8 @@ extension AppointmentsEventPatterns on AppointmentsEvent {
       case CancelAppointment() when cancel != null:
         return cancel(_that.appointmentId);
       case BookAppointment() when book != null:
-        return book(_that.clientId, _that.serviceId, _that.date, _that.time,
-            _that.notes);
+        return book(_that.clientId, _that.serviceId, _that.doctorId,
+            _that.slotId, _that.date, _that.time, _that.notes);
       case _:
         return orElse();
     }
@@ -184,8 +184,14 @@ extension AppointmentsEventPatterns on AppointmentsEvent {
   TResult when<TResult extends Object?>({
     required TResult Function(String clientId) load,
     required TResult Function(String appointmentId) cancel,
-    required TResult Function(String clientId, String serviceId, String date,
-            String time, String? notes)
+    required TResult Function(
+            String clientId,
+            String serviceId,
+            String doctorId,
+            String slotId,
+            String date,
+            String time,
+            String? notes)
         book,
   }) {
     final _that = this;
@@ -195,8 +201,8 @@ extension AppointmentsEventPatterns on AppointmentsEvent {
       case CancelAppointment():
         return cancel(_that.appointmentId);
       case BookAppointment():
-        return book(_that.clientId, _that.serviceId, _that.date, _that.time,
-            _that.notes);
+        return book(_that.clientId, _that.serviceId, _that.doctorId,
+            _that.slotId, _that.date, _that.time, _that.notes);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -218,8 +224,8 @@ extension AppointmentsEventPatterns on AppointmentsEvent {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String clientId)? load,
     TResult? Function(String appointmentId)? cancel,
-    TResult? Function(String clientId, String serviceId, String date,
-            String time, String? notes)?
+    TResult? Function(String clientId, String serviceId, String doctorId,
+            String slotId, String date, String time, String? notes)?
         book,
   }) {
     final _that = this;
@@ -229,8 +235,8 @@ extension AppointmentsEventPatterns on AppointmentsEvent {
       case CancelAppointment() when cancel != null:
         return cancel(_that.appointmentId);
       case BookAppointment() when book != null:
-        return book(_that.clientId, _that.serviceId, _that.date, _that.time,
-            _that.notes);
+        return book(_that.clientId, _that.serviceId, _that.doctorId,
+            _that.slotId, _that.date, _that.time, _that.notes);
       case _:
         return null;
     }
@@ -373,12 +379,16 @@ class BookAppointment implements AppointmentsEvent {
   const BookAppointment(
       {required this.clientId,
       required this.serviceId,
+      required this.doctorId,
+      required this.slotId,
       required this.date,
       required this.time,
       this.notes});
 
   final String clientId;
   final String serviceId;
+  final String doctorId;
+  final String slotId;
   final String date;
   final String time;
   final String? notes;
@@ -399,18 +409,21 @@ class BookAppointment implements AppointmentsEvent {
                 other.clientId == clientId) &&
             (identical(other.serviceId, serviceId) ||
                 other.serviceId == serviceId) &&
+            (identical(other.doctorId, doctorId) ||
+                other.doctorId == doctorId) &&
+            (identical(other.slotId, slotId) || other.slotId == slotId) &&
             (identical(other.date, date) || other.date == date) &&
             (identical(other.time, time) || other.time == time) &&
             (identical(other.notes, notes) || other.notes == notes));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, clientId, serviceId, date, time, notes);
+  int get hashCode => Object.hash(
+      runtimeType, clientId, serviceId, doctorId, slotId, date, time, notes);
 
   @override
   String toString() {
-    return 'AppointmentsEvent.book(clientId: $clientId, serviceId: $serviceId, date: $date, time: $time, notes: $notes)';
+    return 'AppointmentsEvent.book(clientId: $clientId, serviceId: $serviceId, doctorId: $doctorId, slotId: $slotId, date: $date, time: $time, notes: $notes)';
   }
 }
 
@@ -424,6 +437,8 @@ abstract mixin class $BookAppointmentCopyWith<$Res>
   $Res call(
       {String clientId,
       String serviceId,
+      String doctorId,
+      String slotId,
       String date,
       String time,
       String? notes});
@@ -443,6 +458,8 @@ class _$BookAppointmentCopyWithImpl<$Res>
   $Res call({
     Object? clientId = null,
     Object? serviceId = null,
+    Object? doctorId = null,
+    Object? slotId = null,
     Object? date = null,
     Object? time = null,
     Object? notes = freezed,
@@ -455,6 +472,14 @@ class _$BookAppointmentCopyWithImpl<$Res>
       serviceId: null == serviceId
           ? _self.serviceId
           : serviceId // ignore: cast_nullable_to_non_nullable
+              as String,
+      doctorId: null == doctorId
+          ? _self.doctorId
+          : doctorId // ignore: cast_nullable_to_non_nullable
+              as String,
+      slotId: null == slotId
+          ? _self.slotId
+          : slotId // ignore: cast_nullable_to_non_nullable
               as String,
       date: null == date
           ? _self.date

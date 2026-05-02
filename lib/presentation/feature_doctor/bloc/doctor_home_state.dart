@@ -12,6 +12,9 @@ class DoctorHomeLoaded extends DoctorHomeState {
   final List<DoctorAppointment> recentPatients;
   final DateTime selectedDate;
   final int currentTab;
+  final bool isProfileUpdating;
+  final bool profileUpdateSuccess;
+  final String? profileUpdateError;
 
   DoctorHomeLoaded({
     required this.doctor,
@@ -19,6 +22,9 @@ class DoctorHomeLoaded extends DoctorHomeState {
     required this.recentPatients,
     required this.selectedDate,
     this.currentTab = 0,
+    this.isProfileUpdating = false,
+    this.profileUpdateSuccess = false,
+    this.profileUpdateError,
   });
 
   DoctorHomeLoaded copyWith({
@@ -27,6 +33,9 @@ class DoctorHomeLoaded extends DoctorHomeState {
     List<DoctorAppointment>? recentPatients,
     DateTime? selectedDate,
     int? currentTab,
+    bool? isProfileUpdating,
+    bool? profileUpdateSuccess,
+    String? profileUpdateError,
   }) {
     return DoctorHomeLoaded(
       doctor: doctor ?? this.doctor,
@@ -34,6 +43,9 @@ class DoctorHomeLoaded extends DoctorHomeState {
       recentPatients: recentPatients ?? this.recentPatients,
       selectedDate: selectedDate ?? this.selectedDate,
       currentTab: currentTab ?? this.currentTab,
+      isProfileUpdating: isProfileUpdating ?? false,
+      profileUpdateSuccess: profileUpdateSuccess ?? false,
+      profileUpdateError: profileUpdateError,
     );
   }
 }

@@ -17,6 +17,10 @@ class AuthEvent with _$AuthEvent {
     required String fullName,
     required UserRole role,
     String? phoneNumber,
+    // Doctor-only fields
+    String? specialty,
+    String? bio,
+    double? consultationPrice,
   }) = AuthSignUp;
 
   const factory AuthEvent.signOut() = AuthSignOut;

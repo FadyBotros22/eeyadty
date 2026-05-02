@@ -14,6 +14,7 @@ class DoctorHomeBloc extends Bloc<DoctorHomeEvent, DoctorHomeState> {
     on<DoctorHomeDateSelected>(_onDateSelected);
     on<DoctorHomeTabChanged>(_onTabChanged);
     on<DoctorHomeLogoutRequested>(_onLogout);
+    on<DoctorProfileUpdateRequested>(_onProfileUpdate);
   }
 
   Future<void> _onStarted(
@@ -44,8 +45,7 @@ class DoctorHomeBloc extends Bloc<DoctorHomeEvent, DoctorHomeState> {
     if (current is! DoctorHomeLoaded) return;
 
     try {
-      final appointments =
-          await _repo.fetchAppointmentsByDate(event.date);
+      final appointments = await _repo.fetchAppointmentsByDate(event.date);
       emit(current.copyWith(
         scheduleAppointments: appointments,
         selectedDate: event.date,
@@ -69,6 +69,37 @@ class DoctorHomeBloc extends Bloc<DoctorHomeEvent, DoctorHomeState> {
       emit(DoctorHomeLoggedOut());
     } catch (e) {
       emit(DoctorHomeError(e.toString()));
+    }
+  }
+
+  Future<void> _onProfileUpdate(
+      DoctorProfileUpdateRequested event,
+      Emitter<DoctorHomeState> emit) async {
+    final current = state;
+    if (current is! DoctorHomeLoaded) return;
+
+    emit(current.copyWith(isProfileUpdating: true, profileUpdateSuccess: false));
+
+    final updated = current.doctor.copyWith(
+      fullName: event.fullName ?? current.doctor.fullName,
+      phoneNumber: event.phoneNumber,
+      specialty: event.specialty,
+      bio: event.bio,
+      consultationPrice: event.consultationPrice,
+    );
+
+    final result = await _repo.updateProfile(updated);
+    if (result.isSuccess) {
+      emit(current.copyWith(
+        doctor: result.data!,
+        isProfileUpdating: false,
+        profileUpdateSuccess: true,
+      ));
+    } else {
+      emit(current.copyWith(
+        isProfileUpdating: false,
+        profileUpdateError: result.error,
+      ));
     }
   }
 }
