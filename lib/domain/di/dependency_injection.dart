@@ -7,6 +7,7 @@ import '../../domain/repositories/appointment_repository.dart';
 import '../../domain/repositories/profile_repository.dart';
 import '../../../presentation/feature_auth/bloc/auth_bloc.dart';
 import '../../../presentation/feature_client/bloc/client_home_bloc.dart';
+import '../repositories/doctor_repository.dart';
 
 final getIt = GetIt.instance;
 
@@ -22,7 +23,9 @@ Future<void> configureDependencies() async {
   getIt.registerLazySingleton<AppointmentRepository>(
       () => AppointmentRepository());
   getIt.registerLazySingleton<ProfileRepository>(() => ProfileRepository());
-
+  getIt.registerLazySingleton<DoctorRepository>(
+        () => DoctorRepository(),
+  );
   // Blocs (singletons so they survive navigation)
   getIt.registerLazySingleton<AuthBloc>(
       () => AuthBloc(getIt<AuthRepository>(), getIt<UserPreferences>()));

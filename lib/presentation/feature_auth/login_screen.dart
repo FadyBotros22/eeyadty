@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/di/dependency_injection.dart';
 import '../../domain/utils/app_constants.dart';
+import '../feature_doctor/doctor_home_screen.dart';
 import '../widgets/app_widgets.dart';
 import '../feature_client/client_home_screen.dart';
 import 'bloc/auth_bloc.dart';
@@ -45,8 +46,13 @@ class _LoginScreenState extends State<LoginScreen> {
       child: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state.isSuccess) {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-                ClientHomeScreen.route, (_) => false);
+            if (widget.role == UserRole.patient) {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  ClientHomeScreen.route, (_) => false);
+            } else {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  DoctorHomeScreen.route, (_) => false);
+            }
           }
           if (state.errorMessage != null) {
             showAppSnackBar(context, state.errorMessage!, isError: true);

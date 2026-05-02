@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/di/dependency_injection.dart';
+import '../../domain/repositories/doctor_repository.dart';
 import '../../domain/utils/app_constants.dart';
 import '../feature_home/persona_selection_screen.dart';
 import 'bloc/doctor_home_bloc.dart';
@@ -30,7 +31,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) =>
-          DoctorHomeBloc(getIt())..add(DoctorHomeStarted()),
+          DoctorHomeBloc(getIt<DoctorRepository>()),
       child: BlocListener<DoctorHomeBloc, DoctorHomeState>(
         listener: (context, state) {
           if (state is DoctorHomeLoggedOut) {
