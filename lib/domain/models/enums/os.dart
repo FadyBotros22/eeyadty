@@ -1,1 +1,0 @@
-enum OS { IOS, ANDROID }

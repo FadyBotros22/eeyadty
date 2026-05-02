@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'auth_state.dart';
+part of 'profile_state.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -13,75 +13,89 @@ part of 'auth_state.dart';
 T _$identity<T>(T value) => value;
 
 /// @nodoc
-mixin _$AuthState {
+mixin _$ProfileState {
   bool get isLoading;
+  bool get isUpdating;
   ClientUser? get user;
   String? get errorMessage;
-  bool get isSuccess;
+  bool get updateSuccess;
 
-  /// Create a copy of AuthState
+  /// Create a copy of ProfileState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
-  $AuthStateCopyWith<AuthState> get copyWith =>
-      _$AuthStateCopyWithImpl<AuthState>(this as AuthState, _$identity);
+  $ProfileStateCopyWith<ProfileState> get copyWith =>
+      _$ProfileStateCopyWithImpl<ProfileState>(
+          this as ProfileState, _$identity);
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is AuthState &&
+            other is ProfileState &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
+            (identical(other.isUpdating, isUpdating) ||
+                other.isUpdating == isUpdating) &&
             (identical(other.user, user) || other.user == user) &&
             (identical(other.errorMessage, errorMessage) ||
                 other.errorMessage == errorMessage) &&
-            (identical(other.isSuccess, isSuccess) ||
-                other.isSuccess == isSuccess));
+            (identical(other.updateSuccess, updateSuccess) ||
+                other.updateSuccess == updateSuccess));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, isLoading, user, errorMessage, isSuccess);
+  int get hashCode => Object.hash(
+      runtimeType, isLoading, isUpdating, user, errorMessage, updateSuccess);
 
   @override
   String toString() {
-    return 'AuthState(isLoading: $isLoading, user: $user, errorMessage: $errorMessage, isSuccess: $isSuccess)';
+    return 'ProfileState(isLoading: $isLoading, isUpdating: $isUpdating, user: $user, errorMessage: $errorMessage, updateSuccess: $updateSuccess)';
   }
 }
 
 /// @nodoc
-abstract mixin class $AuthStateCopyWith<$Res> {
-  factory $AuthStateCopyWith(AuthState value, $Res Function(AuthState) _then) =
-      _$AuthStateCopyWithImpl;
+abstract mixin class $ProfileStateCopyWith<$Res> {
+  factory $ProfileStateCopyWith(
+          ProfileState value, $Res Function(ProfileState) _then) =
+      _$ProfileStateCopyWithImpl;
   @useResult
   $Res call(
-      {bool isLoading, ClientUser? user, String? errorMessage, bool isSuccess});
+      {bool isLoading,
+      bool isUpdating,
+      ClientUser? user,
+      String? errorMessage,
+      bool updateSuccess});
 
   $ClientUserCopyWith<$Res>? get user;
 }
 
 /// @nodoc
-class _$AuthStateCopyWithImpl<$Res> implements $AuthStateCopyWith<$Res> {
-  _$AuthStateCopyWithImpl(this._self, this._then);
+class _$ProfileStateCopyWithImpl<$Res> implements $ProfileStateCopyWith<$Res> {
+  _$ProfileStateCopyWithImpl(this._self, this._then);
 
-  final AuthState _self;
-  final $Res Function(AuthState) _then;
+  final ProfileState _self;
+  final $Res Function(ProfileState) _then;
 
-  /// Create a copy of AuthState
+  /// Create a copy of ProfileState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? isLoading = null,
+    Object? isUpdating = null,
     Object? user = freezed,
     Object? errorMessage = freezed,
-    Object? isSuccess = null,
+    Object? updateSuccess = null,
   }) {
     return _then(_self.copyWith(
       isLoading: null == isLoading
           ? _self.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isUpdating: null == isUpdating
+          ? _self.isUpdating
+          : isUpdating // ignore: cast_nullable_to_non_nullable
               as bool,
       user: freezed == user
           ? _self.user
@@ -91,14 +105,14 @@ class _$AuthStateCopyWithImpl<$Res> implements $AuthStateCopyWith<$Res> {
           ? _self.errorMessage
           : errorMessage // ignore: cast_nullable_to_non_nullable
               as String?,
-      isSuccess: null == isSuccess
-          ? _self.isSuccess
-          : isSuccess // ignore: cast_nullable_to_non_nullable
+      updateSuccess: null == updateSuccess
+          ? _self.updateSuccess
+          : updateSuccess // ignore: cast_nullable_to_non_nullable
               as bool,
     ));
   }
 
-  /// Create a copy of AuthState
+  /// Create a copy of ProfileState
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
@@ -113,8 +127,8 @@ class _$AuthStateCopyWithImpl<$Res> implements $AuthStateCopyWith<$Res> {
   }
 }
 
-/// Adds pattern-matching-related methods to [AuthState].
-extension AuthStatePatterns on AuthState {
+/// Adds pattern-matching-related methods to [ProfileState].
+extension ProfileStatePatterns on ProfileState {
   /// A variant of `map` that fallback to returning `orElse`.
   ///
   /// It is equivalent to doing:
@@ -129,12 +143,12 @@ extension AuthStatePatterns on AuthState {
 
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>(
-    TResult Function(_AuthState value)? $default, {
+    TResult Function(_ProfileState value)? $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
-      case _AuthState() when $default != null:
+      case _ProfileState() when $default != null:
         return $default(_that);
       case _:
         return orElse();
@@ -156,11 +170,11 @@ extension AuthStatePatterns on AuthState {
 
   @optionalTypeArgs
   TResult map<TResult extends Object?>(
-    TResult Function(_AuthState value) $default,
+    TResult Function(_ProfileState value) $default,
   ) {
     final _that = this;
     switch (_that) {
-      case _AuthState():
+      case _ProfileState():
         return $default(_that);
       case _:
         throw StateError('Unexpected subclass');
@@ -181,11 +195,11 @@ extension AuthStatePatterns on AuthState {
 
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>(
-    TResult? Function(_AuthState value)? $default,
+    TResult? Function(_ProfileState value)? $default,
   ) {
     final _that = this;
     switch (_that) {
-      case _AuthState() when $default != null:
+      case _ProfileState() when $default != null:
         return $default(_that);
       case _:
         return null;
@@ -206,16 +220,16 @@ extension AuthStatePatterns on AuthState {
 
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>(
-    TResult Function(bool isLoading, ClientUser? user, String? errorMessage,
-            bool isSuccess)?
+    TResult Function(bool isLoading, bool isUpdating, ClientUser? user,
+            String? errorMessage, bool updateSuccess)?
         $default, {
     required TResult orElse(),
   }) {
     final _that = this;
     switch (_that) {
-      case _AuthState() when $default != null:
-        return $default(
-            _that.isLoading, _that.user, _that.errorMessage, _that.isSuccess);
+      case _ProfileState() when $default != null:
+        return $default(_that.isLoading, _that.isUpdating, _that.user,
+            _that.errorMessage, _that.updateSuccess);
       case _:
         return orElse();
     }
@@ -236,15 +250,15 @@ extension AuthStatePatterns on AuthState {
 
   @optionalTypeArgs
   TResult when<TResult extends Object?>(
-    TResult Function(bool isLoading, ClientUser? user, String? errorMessage,
-            bool isSuccess)
+    TResult Function(bool isLoading, bool isUpdating, ClientUser? user,
+            String? errorMessage, bool updateSuccess)
         $default,
   ) {
     final _that = this;
     switch (_that) {
-      case _AuthState():
-        return $default(
-            _that.isLoading, _that.user, _that.errorMessage, _that.isSuccess);
+      case _ProfileState():
+        return $default(_that.isLoading, _that.isUpdating, _that.user,
+            _that.errorMessage, _that.updateSuccess);
       case _:
         throw StateError('Unexpected subclass');
     }
@@ -264,15 +278,15 @@ extension AuthStatePatterns on AuthState {
 
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(bool isLoading, ClientUser? user, String? errorMessage,
-            bool isSuccess)?
+    TResult? Function(bool isLoading, bool isUpdating, ClientUser? user,
+            String? errorMessage, bool updateSuccess)?
         $default,
   ) {
     final _that = this;
     switch (_that) {
-      case _AuthState() when $default != null:
-        return $default(
-            _that.isLoading, _that.user, _that.errorMessage, _that.isSuccess);
+      case _ProfileState() when $default != null:
+        return $default(_that.isLoading, _that.isUpdating, _that.user,
+            _that.errorMessage, _that.updateSuccess);
       case _:
         return null;
     }
@@ -281,92 +295,108 @@ extension AuthStatePatterns on AuthState {
 
 /// @nodoc
 
-class _AuthState implements AuthState {
-  const _AuthState(
+class _ProfileState implements ProfileState {
+  const _ProfileState(
       {this.isLoading = false,
+      this.isUpdating = false,
       this.user,
       this.errorMessage,
-      this.isSuccess = false});
+      this.updateSuccess = false});
 
   @override
   @JsonKey()
   final bool isLoading;
+  @override
+  @JsonKey()
+  final bool isUpdating;
   @override
   final ClientUser? user;
   @override
   final String? errorMessage;
   @override
   @JsonKey()
-  final bool isSuccess;
+  final bool updateSuccess;
 
-  /// Create a copy of AuthState
+  /// Create a copy of ProfileState
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
-  _$AuthStateCopyWith<_AuthState> get copyWith =>
-      __$AuthStateCopyWithImpl<_AuthState>(this, _$identity);
+  _$ProfileStateCopyWith<_ProfileState> get copyWith =>
+      __$ProfileStateCopyWithImpl<_ProfileState>(this, _$identity);
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _AuthState &&
+            other is _ProfileState &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
+            (identical(other.isUpdating, isUpdating) ||
+                other.isUpdating == isUpdating) &&
             (identical(other.user, user) || other.user == user) &&
             (identical(other.errorMessage, errorMessage) ||
                 other.errorMessage == errorMessage) &&
-            (identical(other.isSuccess, isSuccess) ||
-                other.isSuccess == isSuccess));
+            (identical(other.updateSuccess, updateSuccess) ||
+                other.updateSuccess == updateSuccess));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, isLoading, user, errorMessage, isSuccess);
+  int get hashCode => Object.hash(
+      runtimeType, isLoading, isUpdating, user, errorMessage, updateSuccess);
 
   @override
   String toString() {
-    return 'AuthState(isLoading: $isLoading, user: $user, errorMessage: $errorMessage, isSuccess: $isSuccess)';
+    return 'ProfileState(isLoading: $isLoading, isUpdating: $isUpdating, user: $user, errorMessage: $errorMessage, updateSuccess: $updateSuccess)';
   }
 }
 
 /// @nodoc
-abstract mixin class _$AuthStateCopyWith<$Res>
-    implements $AuthStateCopyWith<$Res> {
-  factory _$AuthStateCopyWith(
-          _AuthState value, $Res Function(_AuthState) _then) =
-      __$AuthStateCopyWithImpl;
+abstract mixin class _$ProfileStateCopyWith<$Res>
+    implements $ProfileStateCopyWith<$Res> {
+  factory _$ProfileStateCopyWith(
+          _ProfileState value, $Res Function(_ProfileState) _then) =
+      __$ProfileStateCopyWithImpl;
   @override
   @useResult
   $Res call(
-      {bool isLoading, ClientUser? user, String? errorMessage, bool isSuccess});
+      {bool isLoading,
+      bool isUpdating,
+      ClientUser? user,
+      String? errorMessage,
+      bool updateSuccess});
 
   @override
   $ClientUserCopyWith<$Res>? get user;
 }
 
 /// @nodoc
-class __$AuthStateCopyWithImpl<$Res> implements _$AuthStateCopyWith<$Res> {
-  __$AuthStateCopyWithImpl(this._self, this._then);
+class __$ProfileStateCopyWithImpl<$Res>
+    implements _$ProfileStateCopyWith<$Res> {
+  __$ProfileStateCopyWithImpl(this._self, this._then);
 
-  final _AuthState _self;
-  final $Res Function(_AuthState) _then;
+  final _ProfileState _self;
+  final $Res Function(_ProfileState) _then;
 
-  /// Create a copy of AuthState
+  /// Create a copy of ProfileState
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $Res call({
     Object? isLoading = null,
+    Object? isUpdating = null,
     Object? user = freezed,
     Object? errorMessage = freezed,
-    Object? isSuccess = null,
+    Object? updateSuccess = null,
   }) {
-    return _then(_AuthState(
+    return _then(_ProfileState(
       isLoading: null == isLoading
           ? _self.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isUpdating: null == isUpdating
+          ? _self.isUpdating
+          : isUpdating // ignore: cast_nullable_to_non_nullable
               as bool,
       user: freezed == user
           ? _self.user
@@ -376,14 +406,14 @@ class __$AuthStateCopyWithImpl<$Res> implements _$AuthStateCopyWith<$Res> {
           ? _self.errorMessage
           : errorMessage // ignore: cast_nullable_to_non_nullable
               as String?,
-      isSuccess: null == isSuccess
-          ? _self.isSuccess
-          : isSuccess // ignore: cast_nullable_to_non_nullable
+      updateSuccess: null == updateSuccess
+          ? _self.updateSuccess
+          : updateSuccess // ignore: cast_nullable_to_non_nullable
               as bool,
     ));
   }
 
-  /// Create a copy of AuthState
+  /// Create a copy of ProfileState
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')

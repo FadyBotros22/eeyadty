@@ -1,60 +1,47 @@
-
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../data/remote/network/failure/failure_bloc.dart';
-import '../../domain/utils/utils.dart';
+import 'package:flutter/material.dart';
 import '../feature_auth/login_screen.dart';
-import '../feature_auth/registration/registration_screen.dart';
-
-import '../feature_home/home_screen.dart';
-import '../merchant_initializer_screen.dart';
-import 'navigation_transitions.dart';
+import '../feature_auth/signup_screen.dart';
+import '../feature_client/client_home_screen.dart';
+import '../feature_home/persona_selection_screen.dart';
+import '../splash/splash_screen.dart';
 
 class RouterGenerator {
-  static Route<dynamic> generateRoute(RouteSettings routeSettings) {
-    late Widget child;
+  static const String splashRoute = '/splash';
 
-    switch (routeSettings.name) {
-      case MerchantInitializerScreen.route:
-        child = const MerchantInitializerScreen();
+  static Route<dynamic> generateRoute(RouteSettings settings) {
+    Widget child;
+
+    switch (settings.name) {
+      case PersonaSelectionScreen.route:
+        child = const PersonaSelectionScreen();
         break;
 
       case LoginScreen.route:
         child = const LoginScreen();
         break;
 
-
-
-      case RegistrationScreen.route:
-        child = const RegistrationScreen();
+      case SignUpScreen.route:
+        child = const SignUpScreen();
         break;
 
-      case HomeScreen.route:
-        child = const HomeScreen();
+      case ClientHomeScreen.route:
+        child = const ClientHomeScreen();
         break;
 
       default:
-        throw Exception();
+        child = const PersonaSelectionScreen();
     }
 
-    Widget childWithErrorWrapper = BlocListener<FailureBloc, FailureState>(
-      listener: (context, state) {
-        if (state.failure != null && state.failure!.shouldShowToast) {
-          showBottomFlash(context,
-              message: (state.failure?.userMessage).toString(), isError: true);
-        }
-      },
-      child: child,
-    );
-
-    switch (routeSettings.name) {
-      default:
-        return FadePageRoute(
-          builder: (context) {
-            return childWithErrorWrapper;
-          },
+    return PageRouteBuilder(
+      settings: settings,
+      pageBuilder: (_, animation, __) => child,
+      transitionsBuilder: (_, animation, __, child) {
+        return FadeTransition(
+          opacity: animation,
+          child: child,
         );
-    }
+      },
+      transitionDuration: const Duration(milliseconds: 250),
+    );
   }
 }

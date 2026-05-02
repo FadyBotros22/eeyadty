@@ -7,26 +7,31 @@ import '../feature_client/client_home_screen.dart';
 import 'bloc/auth_bloc.dart';
 import 'bloc/auth_event.dart';
 import 'bloc/auth_state.dart';
-import 'signup_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  static const route = '/login';
+class SignUpScreen extends StatefulWidget {
+  static const route = '/sign-up';
 
-  const LoginScreen({super.key});
+  const SignUpScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
+  final _phoneCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
+  final _confirmCtrl = TextEditingController();
 
   @override
   void dispose() {
+    _nameCtrl.dispose();
     _emailCtrl.dispose();
+    _phoneCtrl.dispose();
     _passwordCtrl.dispose();
+    _confirmCtrl.dispose();
     super.dispose();
   }
 
@@ -56,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 24),
-                      // Back button
+                      // Back
                       GestureDetector(
                         onTap: () => Navigator.of(context).pop(),
                         child: Container(
@@ -73,16 +78,25 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 32),
-                      // Header
-                      Text('Welcome back', style: AppTextStyles.h1),
+                      Text('Create Account', style: AppTextStyles.h1),
                       const SizedBox(height: 8),
                       Text(
-                        'Sign in to your account to continue',
+                        'Fill in your details to get started',
                         style: AppTextStyles.body
                             .copyWith(color: AppColors.textSecondary),
                       ),
                       const SizedBox(height: 40),
-                      // Email field
+                      AppTextField(
+                        label: 'Full Name',
+                        hint: 'John Doe',
+                        controller: _nameCtrl,
+                        prefixIcon: const Icon(Icons.person_outline,
+                            color: AppColors.textSecondary, size: 20),
+                        validator: (v) => (v == null || v.isEmpty)
+                            ? 'Full name is required'
+                            : null,
+                      ),
+                      const SizedBox(height: 20),
                       AppTextField(
                         label: 'Email address',
                         hint: 'you@example.com',
@@ -97,10 +111,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                       const SizedBox(height: 20),
-                      // Password field
+                      AppTextField(
+                        label: 'Phone Number (optional)',
+                        hint: '+20 100 000 0000',
+                        controller: _phoneCtrl,
+                        keyboardType: TextInputType.phone,
+                        prefixIcon: const Icon(Icons.phone_outlined,
+                            color: AppColors.textSecondary, size: 20),
+                      ),
+                      const SizedBox(height: 20),
                       AppTextField(
                         label: 'Password',
-                        hint: 'Your password',
+                        hint: 'Min 6 characters',
                         controller: _passwordCtrl,
                         obscureText: true,
                         prefixIcon: const Icon(Icons.lock_outline,
@@ -111,35 +133,51 @@ class _LoginScreenState extends State<LoginScreen> {
                           return null;
                         },
                       ),
+                      const SizedBox(height: 20),
+                      AppTextField(
+                        label: 'Confirm Password',
+                        hint: 'Re-enter your password',
+                        controller: _confirmCtrl,
+                        obscureText: true,
+                        prefixIcon: const Icon(Icons.lock_outline,
+                            color: AppColors.textSecondary, size: 20),
+                        validator: (v) {
+                          if (v != _passwordCtrl.text) {
+                            return 'Passwords do not match';
+                          }
+                          return null;
+                        },
+                      ),
                       const SizedBox(height: 32),
-                      // Sign in button
                       AppPrimaryButton(
-                        label: 'Sign In',
+                        label: 'Create Account',
                         isLoading: state.isLoading,
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            context.read<AuthBloc>().add(AuthEvent.signIn(
+                            context.read<AuthBloc>().add(AuthEvent.signUp(
                                   email: _emailCtrl.text.trim(),
                                   password: _passwordCtrl.text,
+                                  fullName: _nameCtrl.text.trim(),
+                                  phoneNumber: _phoneCtrl.text.isNotEmpty
+                                      ? _phoneCtrl.text.trim()
+                                      : null,
                                 ));
                           }
                         },
                       ),
                       const SizedBox(height: 24),
-                      // Sign up link
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Don't have an account? ",
+                            'Already have an account? ',
                             style: AppTextStyles.body.copyWith(
                                 color: AppColors.textSecondary),
                           ),
                           GestureDetector(
-                            onTap: () => Navigator.of(context)
-                                .pushNamed(SignUpScreen.route),
+                            onTap: () => Navigator.of(context).pop(),
                             child: Text(
-                              'Sign Up',
+                              'Sign In',
                               style: AppTextStyles.body.copyWith(
                                 color: AppColors.primary,
                                 fontWeight: FontWeight.w600,
@@ -148,6 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 16),
                     ],
                   ),
                 ),
